@@ -17,28 +17,10 @@ Table::Table()
             }
         }
     createIndexOfTable(_fields);
-    initializeFigures();
+    //initializeFigures();
 }
 
-void Table::initializeFigures()
-{
-    Player firstPlayer{"white"};
-    Player secondPlayer{"black"};
 
-    figureName figures[16] = {rook,knight,bishop,king,queen,bishop,knight,rook,pawn,pawn,pawn,pawn,pawn,pawn,pawn,pawn};
-
-    for(int i = 0; i < 2; i++)
-    {
-        for(int j = 0; j < 8; j++)
-        {
-            Figure figureW{figures[i * 8 + j],true,&_fields[i][j],&firstPlayer};
-            _figures[i * 8 + j] = figureW;
-            Figure figureB{figures[i * 8 + j],true,&_fields[7-i][j],&secondPlayer};
-            _figures[i * 8 + j + 2 * 8] = figureB;
-        }
-    }
-
-}
 
 void Table::createIndexOfTable(Field** field)
 {
@@ -80,20 +62,3 @@ Field Table::getField(std::string index)
     }
 }
 
-Figure* Table::getFigureOnField(Field* position)
-{
-    Figure* figure = nullptr;
-    for(auto item:_figures)
-    {
-        if(((*item.getPosition()).getCol() == (*position).getCol()) && (*item.getPosition()).getRow() == (*position).getRow())
-        {
-            figure = &item;
-            return figure;
-        }
-    }
-    return figure;
-}
-void Table::setFigureOnField(Figure* figure, Field* position)
-{
-    figure->setPosition(position);
-}

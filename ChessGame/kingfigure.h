@@ -7,8 +7,7 @@ class KingFigure : public Figure
 {
 public:
     KingFigure();
-    figureName getName() override;
-    void setName(figureName name) override;
+    bool isValidFigureMove(Field nextPosition) override;
 };
 
 #endif // KINGFIGURE_H

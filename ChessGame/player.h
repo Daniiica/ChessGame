@@ -3,21 +3,19 @@
 
 
 #include <iostream>
-#include <string.h>
-#include <array>
+#include <vector>
+#include "move.h"
+#include "figurecolor.h"
 //#include "table.h"
 
 class Player
 {
 private:
-    std::string _name;
-    bool _first;
+    FigureColor _color;
+    std::vector<Move> _allMoves;
 public:
    Player() = default;
-   Player(std::string name);
-   void setName(std::string name);
-   std::string getName();
-   bool getState();
+
 };
 #endif // PLAYER_H
 

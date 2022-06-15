@@ -2,16 +2,15 @@
 #define TABLE_H
 
 #include "field.h"
-#include "figure.h"
+#include "figureset.h"
 
 class Table
 {
 private:
     Field** _fields;
-    Figure _figures[32];
+    FigureSet _playerFigures;
 public:
     Table();
-    void initializeFigures();
     void createIndexOfTable(Field** fields);
     Field** getFields();
     Field getField(int row, int col);
