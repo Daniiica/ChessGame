@@ -1,0 +1,103 @@
+#include "figure.h"
+#include "player.h"
+#include <iostream>
+#include <array>
+#include <map>
+
+std::string* createIndexOfTable()
+{
+    std::string indexOfTable[64];
+    int index = 0;
+    std::string letters[] = {"a","b","c","d","e","f","g","h"};
+    std::string numbers[] = {"1","2","3","4","5","6","7","8"};
+    for(auto let : letters)
+    {
+        for(auto num : numbers)
+        {
+            indexOfTable[index] = let + num;
+            index++;
+        }
+    }
+    return indexOfTable;
+}
+
+void createAllFigures(std::vector<Figure*> allFigures)
+{
+    Player whitePlayer;
+    Player blackPlayer;
+    Figure pawn{"pawn1" , }
+}
+
+void setFigureOnStart(std::map<std::string, Figure*> *table, std::string *tableIndex)
+{
+//    auto mapIteratorSecondPlayer = (*table).find("a8");
+//    auto mapIteratorFirstPlayer = (*table).begin();
+//    for (int i = 0; i < 8; i++)
+//    {
+//        mapIteratorFirstPlayer->second = firstPlayer->getFigures().at(i);
+//        mapIteratorSecondPlayer->second = secondPlayer->getFigures().at(i);
+//        mapIteratorFirstPlayer++;
+//        mapIteratorSecondPlayer--;
+//    }
+
+}
+
+std::string chooseName(std::string name, Player *firstPlayer, Player *secondPlayer)
+{
+
+    std::cout << "Choose name (white or black): " << std::endl;
+
+    std::cin >> name;
+
+    while (name != "white" && name != "black" && name != "q")
+    {
+        std::cout << "Please enter valid name, if you want to quit press q" << std::endl;
+        std::cin >> name;
+    }
+    if (name == "white")
+    {
+        firstPlayer->setName("white");
+        secondPlayer->setName("black");
+        std::cout << "First player is white, second player is black" << std::endl;
+    }
+    else
+    {
+        firstPlayer->setName("black");
+        secondPlayer->setName("white");
+        std::cout << "First player is black, second player is white" << std::endl;
+    }
+    return name;
+}
+
+int main()
+{
+    Player firstPlayer;
+    Player secondPlayer;
+    std::string inputValue;
+    std::string result;
+    std::string previousMove;
+    std::string nextMove;
+
+    std::map<std::string, Figure*> table;
+    std::string* tableIndex = createIndexOfTable();
+
+    std::vector<Figure*> allFigures;
+    createAllFigures(allFigures);
+
+    setFigureOnStart(&table, tableIndex);
+    std::cout << "Welcome to Chess!" << std::endl;
+    std::cout << "We're glad you're here and hope you'll enjoy! " << std::endl;
+    std::cout << "Example of a correctly entered move is:  previous_step:next_step" << std::endl;
+    std::cout << "If you want to quit game press q" << std::endl;
+
+    chooseName(inputValue, &firstPlayer, &secondPlayer);
+    inputValue = "";
+    while (previousMove != "q" && result != "check" && result != "checkmate")
+    {
+        std::cin >> previousMove; // previous_move
+        std::cin >> nextMove;
+        std::cout << "[" << firstPlayer.getName() << "] : " << previousMove << " : " << nextMove << std::endl;
+    }
+    return 0;
+}
+
