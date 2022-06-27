@@ -1,11 +1,13 @@
 #ifndef FIGURECOLOR_H
 #define FIGURECOLOR_H
 
+#include <string>
 
 enum class FigureColor
 {
-    whte,
-    black
+    White,
+    Black
 };
+
 
 #endif // FIGURECOLOR_H

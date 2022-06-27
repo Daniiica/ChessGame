@@ -15,7 +15,9 @@ private:
     std::vector<Move> _allMoves;
 public:
    Player() = default;
-
+   Player(FigureColor color);
+   bool addNewMove(Field* firstPosition, Field* secondPosition, Table table);
+   std::vector<Move> getMovesFromPlayer();
 };
 #endif // PLAYER_H
 

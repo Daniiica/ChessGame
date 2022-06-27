@@ -34,4 +34,5 @@ HEADERS += \
     player.h \
     queenfigure.h \
     rookfigure.h \
-    table.h
+    table.h \
+    whiteblackzone.h

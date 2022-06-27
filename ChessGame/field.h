@@ -2,7 +2,7 @@
 #define FIELD_H
 
 #include <string>
-#include "player.h"
+#include <iostream>
 
 class Field
 {
@@ -14,11 +14,15 @@ private:
 public:
     Field();
     Field(int row, int col, std::string value);
+    Field(int row, int col);
     void setValue(std::string value);
     int getRow();
     int getCol();
+    void setRow(int row);
+    void setCol(int col);
     std::string getValue();
     bool outOfRange();
+    bool operator==(const Field &rhs) const;
 };
 
 #endif // FIELD_H

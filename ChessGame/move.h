@@ -10,11 +10,12 @@ class Move
 private:
     Field _startPosition;
     Field _endPosition;
-    Figure _figure;
-    Figure _eatenFigure;
+    Figure* _figure;
+    Figure* _eatenFigure;
 public:
     Move();
-    bool isValidMove();
+    Move(Field startPosition, Field endPosition, Figure* figure, Figure* eatenFigure);
+    bool isValidMove(Table table);
 };
 
 #endif // MOVE_H
