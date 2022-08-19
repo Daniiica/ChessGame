@@ -12,14 +12,14 @@ Field::Field(int row, int col)
 }
 
 Field::Field(int row, int col, std::string value)
-    :_row{row}, _col{col} , _value{value}
+    :_row{row}, _col{col} , _position{value}
 {
 
 }
 
-void Field::setValue(std::string value)
+void Field::setPosition(std::string value)
 {
-    _value = value;
+    _position = value;
 }
 
 int Field::getCol()
@@ -31,28 +31,36 @@ int Field::getRow()
 {
     return _row;
 }
-std::string Field::getValue()
+
+std::string Field::getPosition()
 {
-    return _value;
-}
-bool Field::outOfRange()
-{
-    if(_row > 7 || _col > 7)
-        return true;
-    return false;
+    return _position;
 }
 
-bool Field::operator==(const Field &rhs) const {
-    if(rhs._col == this->_col && rhs._row == this->_row)
+bool Field::operator==(const Field &rhs) const
+{
+    if(rhs._col == _col && rhs._row == _row)
         return true;
     else
         return false;
 }
+
 void Field::setRow(int row)
 {
     _row = row;
 }
+
 void Field::setCol(int col)
 {
     _col = col;
+}
+
+InputResultValue Field::invalidField(Field* startField,Field* endField)
+{
+    if(startField == nullptr || endField == nullptr)
+    {
+        TextLogger::logWarning("Please enter valid positions.");
+        return InputResultValue::notValidInput;
+    }
+    return InputResultValue::validInput;
 }

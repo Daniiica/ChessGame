@@ -10,9 +10,13 @@ class QueenFigure : public Figure
 public:
     QueenFigure();
     QueenFigure(FigureColor color);
-    QueenFigure(FigureColor color, Field currentPosition) : Figure(color, FigureName::queen, currentPosition, true) {};
-    bool isValidFigureMove(Field nextPosition) override;
-    std::map<int,int> allPositionsBetweenCurrentAndNextPosition(Field nextPositions) override;
+    QueenFigure(FigureColor color, Field* currentPosition) :
+        Figure(color, FigureName::queen, currentPosition) {};
+    bool isValidFigureMove(Field startPosition,Field nextPosition) override;
+    std::vector<std::pair<int,int>> allPositionsBetweenCurrentAndNextPosition(
+            Field nextPositions) override;
+    std::vector<std::pair<int,int>> allAllowedMoves(
+            std::vector<Figure*> figuresOnTable) override;
 };
 
 #endif // QUEENFIGURE_H

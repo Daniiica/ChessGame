@@ -5,21 +5,51 @@ Player::Player(FigureColor color)
 {
 }
 
-bool Player::addNewMove(Field* firstPosition, Field* secondPosition,Table table)
+std::string Player::getName()
 {
-    Move move(*firstPosition,*secondPosition,table.getFigureOnField(*firstPosition),table.getFigureOnField(*secondPosition));
-    if(move.isValidMove(table)){
-        _allMoves.push_back(move);
-        return true;
-    }
-    else
-    {
-        std::cout << "Move is not valid." << std::endl;
-        return false;
-    }
+    return _color == FigureColor::White ? "White" : "Black";
+}
+
+FigureColor Player::getColor()
+{
+    return _color;
+}
+
+bool Player::getCastlingLongStatus()
+{
+    return _castlingLongStatus;
+}
+
+bool Player::getCastlingShortStatus()
+{
+    return _castlingShortStatus;
+}
+
+void Player::disableCastlingStatus()
+{
+    _castlingLongStatus = false;
+    _castlingShortStatus = false;
 }
 
 std::vector<Move> Player::getMovesFromPlayer()
 {
     return _allMoves;
 }
+
+void Player::changeCastlingStatus(Figure* currentFigure, Field* firstPosition)
+{
+    if(currentFigure->getType() == FigureName::king)
+    {
+        _castlingLongStatus = false;
+        _castlingShortStatus = false;
+    }
+    if(currentFigure->getType() == FigureName::rook)
+    {
+        if(firstPosition->getCol() == 0)
+            _castlingLongStatus = false;
+        if(firstPosition->getCol() == 7)
+            _castlingShortStatus = false;
+    }
+}
+
+

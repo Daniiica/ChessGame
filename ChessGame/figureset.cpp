@@ -1,109 +1,130 @@
 #include "figureset.h"
 
-FigureSet::FigureSet(FigureColor color)
-{
-
-    //    for(int j = 0 ; j < 2 ; j++)
-    //    {
-    //        BishopFigure bishop;
-    //        KnightFigure knight;
-    //        RookFigure rook;
-
-    //        _setfigures.push_back(&rook);
-    //        _setfigures.push_back(&knight);
-    //        _setfigures.push_back(&bishop);
-
-    //        if(j == 0)
-    //        {
-    //            KingFigure king;
-    //            QueenFigure queen;
-    //            _setfigures.push_back(&king);
-    //            _setfigures.push_back(&queen);
-    //        }
-    //    }
-    //    for(int j = 0 ; j < 8 ; j++)
-    //    {
-    //        PawnFigure pawn;
-    //        _setfigures.push_back(&pawn);
-    //    }
-
-
-}
-FigureSet::FigureSet(std::vector<Figure*> figures)
-   // :_setfigures{figures}
-{
-
-}
 Figure* FigureSet::figureOnPosition(Field position)
 {
     for(auto item : _setfigures)
     {
-        if(item->getCurrentPosition() == position)
+        if(*(item->getCurrentPosition()) == position)
         {
             return item;
         }
     }
     return nullptr;
 }
+
 void FigureSet::setColor(FigureColor color)
 {
     _setColor = color;
 }
-void FigureSet::removeEatenFigure(Figure* eatenFigure)
+
+std::vector<Figure*> FigureSet::getFiguresWithoutKing()
 {
-    for(auto it = _setfigures.begin(); it < _setfigures.end(); it++)
+    std::vector<Figure*> figureSetWithoutKing;
+    for(auto figure : _setfigures)
     {
-        if(eatenFigure == *it)
+        if(figure->getType() != FigureName::king && figure->getState() == true)
         {
-            _setfigures.erase(it);
+            figureSetWithoutKing.emplace_back(figure);
         }
     }
+    return figureSetWithoutKing;
 }
-void FigureSet::editFigure(Figure* figure)
-{
 
+std::vector<Figure*> FigureSet::getAllFigures()
+{
+    std::vector<Figure*> allActiveFigures;
+    for(auto figure : _setfigures)
+    {
+        if(figure->getState() == true) // && figure->getCurrentPosition() != nullptr)
+        {
+            allActiveFigures.emplace_back(figure);
+        }
+    }
+    return allActiveFigures;
 }
+
 void FigureSet::addFigure(Figure* newFigure)
 {
     _setfigures.push_back(newFigure);
 }
-std::vector<Figure*> FigureSet::getFigures()
-{
-    return _setfigures;
-}
-Figure* FigureSet::getFigureOnPosition(Field position)
-{
-    for(auto item : _setfigures)
-    {
-        if(item->getCurrentPosition() == position)
-            return item;
-    }
-    return nullptr;
-}
-void FigureSet::initializeFiguresOnStart(FigureColor color)
-{
-    _setColor = color;
 
-    RookFigure* rook = new RookFigure(color);
-    _setfigures.push_back(rook);
-    KnightFigure* knight = new KnightFigure(color);
-    _setfigures.push_back(knight);
-    BishopFigure* bishop = new BishopFigure(color);
-    _setfigures.push_back(bishop);
-    KingFigure* king = new KingFigure(color);
-    _setfigures.push_back(king);
-    QueenFigure* queen = new QueenFigure(color);
-    _setfigures.push_back(queen);
-    bishop = new BishopFigure(color);
-    _setfigures.push_back(bishop);
-    knight = new KnightFigure(color);
-    _setfigures.push_back(knight);
-    rook = new RookFigure(color);
-    _setfigures.push_back(rook);
-    PawnFigure* pawn = nullptr;
-    for(int i = 0; i < 8 ; i++)
+void FigureSet::initializeFiguresOnStart(std::vector<Figure*> allFigures)
+{
+    _setfigures = allFigures;
+}
+
+std::vector<std::pair<int,int>> FigureSet::allAllowedMovesForOneFigureSet(
+        std::vector<Figure*> figuresOnTable)
+{
+    std::vector<std::pair<int,int>> allAllowedMovesPerFigureSet;
+
+    for(auto figure : _setfigures)
     {
-        pawn = new PawnFigure(color);
-        _setfigures.push_back(pawn);
+        auto allAllowedMovesPerFigure = figure->allAllowedMoves(figuresOnTable);
+        allAllowedMovesPerFigureSet.insert(allAllowedMovesPerFigureSet.end(),
+                                           allAllowedMovesPerFigure.begin(),
+                                           allAllowedMovesPerFigure.end());
+    }
+    return allAllowedMovesPerFigureSet;
+}
+
+void FigureSet::changePawnWithOtherFigure(Figure** pawnFigure)
+{
+    std::string replaceFigureName;
+    auto pawnFigureColor = (*pawnFigure)->getColor();
+    auto pawnPosition = (*pawnFigure)->getCurrentPosition();
+    TextLogger::logFigureName(
+                "Please enter the name of figure you want to exchange the pawn with.\n "
+                "Choose between: rook knight bishop queen pawn\n", pawnFigureColor);
+    while (replaceFigureName != "rook" &&
+           replaceFigureName != "knight" &&
+           replaceFigureName != "bishop" &&
+           replaceFigureName != "queen" &&
+           replaceFigureName != "pawn")
+    {
+        std::cin >> replaceFigureName;
+    }
+
+    if(replaceFigureName == "rook")
+    {
+        Figure* rook = new RookFigure(pawnFigureColor, pawnPosition);
+        replaceFigure(pawnFigure, rook);
+    }
+    if(replaceFigureName == "knight")
+    {
+        KnightFigure* knight = new KnightFigure(pawnFigureColor, pawnPosition);
+        replaceFigure(pawnFigure, knight);
+    }
+    if(replaceFigureName == "bishop")
+    {
+        BishopFigure* bishop = new BishopFigure(pawnFigureColor, pawnPosition);
+        replaceFigure(pawnFigure, bishop);
+    }
+    if(replaceFigureName == "queen")
+    {
+        QueenFigure* queen = new QueenFigure(pawnFigureColor, pawnPosition);
+        replaceFigure(pawnFigure, queen);
+    }
+    else
+    {
+        return;
+    }
+}
+
+void FigureSet::replaceFigure(Figure** pawnFigure, Figure* newFigure)
+{
+    addFigure(newFigure);
+    (*pawnFigure)->setEatenState();
+    (*pawnFigure)->setCurrentPosition(nullptr);
+    *pawnFigure = newFigure;
+}
+
+void FigureSet::deleteFigure(Figure* figureOnEndPosition) // da se proveri da li radi
+{
+    auto figureSetIterator = _setfigures.begin();
+    while(figureSetIterator != _setfigures.end())
+    {
+        if(*figureSetIterator == figureOnEndPosition)
+            _setfigures.erase(figureSetIterator);
     }
 }

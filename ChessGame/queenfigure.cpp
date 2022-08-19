@@ -5,35 +5,49 @@ QueenFigure::QueenFigure()
     _type = FigureName::queen;
     _state = true;
 }
+
 QueenFigure::QueenFigure(FigureColor color) : Figure(color)
 {
     _type = FigureName::queen;
     _state = true;
 }
-bool QueenFigure::isValidFigureMove(Field nextPosition)
+
+bool QueenFigure::isValidFigureMove(Field startPosition,Field nextPosition)
 {
-    BishopFigure bishop;
-    RookFigure rook;
-    if(bishop.isValidFigureMove(nextPosition))
-        return rook.isValidFigureMove(nextPosition);
-    return bishop.isValidFigureMove(nextPosition);
+    if(!BishopFigure::isValidBishopMove(startPosition,nextPosition))
+        return RookFigure::isValidRookMove(startPosition,nextPosition);
+    return BishopFigure::isValidBishopMove(startPosition,nextPosition);
 }
-std::map<int,int> QueenFigure::allPositionsBetweenCurrentAndNextPosition(Field nextPosition)
+
+std::vector<std::pair<int,int>> QueenFigure::allPositionsBetweenCurrentAndNextPosition(
+        Field nextPosition)
 {
-    std::map<int,int> indexOfFields;
-    RookFigure rook;
-    rook.setCurrentPosition(_currentPosition);
-    if(rook.isValidFigureMove(nextPosition))
+    std::vector<std::pair<int,int>> indexOfFields;
+
+    if(RookFigure::isValidRookMove(*_currentPosition,nextPosition))
     {
-        auto rookMap = rook.allPositionsBetweenCurrentAndNextPosition(nextPosition);
-        indexOfFields.insert(rookMap.begin(),rookMap.end());
+        auto rookPath = RookFigure::allPositionsBetweenRookAndNextPosition(
+                    _currentPosition,nextPosition);
+        indexOfFields.insert(indexOfFields.begin(),rookPath.begin(),rookPath.end());
     }
-    BishopFigure bishop;
-    bishop.setCurrentPosition(_currentPosition);
-    if(bishop.isValidFigureMove(nextPosition))
+    if(BishopFigure::isValidBishopMove(*_currentPosition,nextPosition))
     {
-        auto bishopMap = bishop.allPositionsBetweenCurrentAndNextPosition(nextPosition);
-        indexOfFields.insert(bishopMap.begin(),bishopMap.end());
+        auto bishopPath = BishopFigure::allPositionsBetweenBishopAndNextPosition(
+                    _currentPosition,nextPosition);
+        indexOfFields.insert(indexOfFields.end(),bishopPath.begin(),bishopPath.end());
     }
     return indexOfFields;
+}
+
+std::vector<std::pair<int,int>> QueenFigure::allAllowedMoves(
+        std::vector<Figure*> figuresOnTable)
+{
+    std::vector<std::pair<int,int>> allowedMoves;
+
+    allowedMoves = BishopFigure::allAllowedBishopMoves(_currentPosition,figuresOnTable,_color);
+
+    auto rookAllowedMoves = RookFigure::allAllowedRookMoves(_currentPosition,figuresOnTable,_color);
+    allowedMoves.insert(allowedMoves.end(),rookAllowedMoves.begin(),rookAllowedMoves.end());
+
+    return allowedMoves;
 }

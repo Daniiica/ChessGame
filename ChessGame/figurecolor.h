@@ -9,5 +9,4 @@ enum class FigureColor
     Black
 };
 
-
 #endif // FIGURECOLOR_H

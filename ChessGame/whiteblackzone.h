@@ -1,7 +1,6 @@
 #ifndef WHITEBLACKZONE_H
 #define WHITEBLACKZONE_H
 
-
 enum class WhiteBlackZone
 {
     whiteZoneStartRow = 0,

@@ -10,6 +10,8 @@
 #include "pawnfigure.h"
 #include "knightfigure.h"
 #include <vector>
+#include <memory>
+#include "textlogger.h"
 
 class FigureSet
 {
@@ -18,16 +20,16 @@ private:
     FigureColor _setColor;
 public:
     FigureSet() = default;
-    FigureSet(FigureColor color);
-    FigureSet(std::vector<Figure*> figures);
     Figure* figureOnPosition(Field position);
-    void removeEatenFigure(Figure* eatenFigure);
-    void editFigure(Figure* figure);
     void setColor(FigureColor color);
-    Figure* getFigureOnPosition(Field position);
-    std::vector<Figure*> getFigures();
+    std::vector<Figure*> getFiguresWithoutKing();
+    std::vector<Figure*> getAllFigures();
     void addFigure(Figure* newFigure);
-    void initializeFiguresOnStart(FigureColor color);
+    void initializeFiguresOnStart(std::vector<Figure*> allFigures);
+    std::vector<std::pair<int,int>> allAllowedMovesForOneFigureSet(std::vector<Figure*> figuresOnTable);
+    void changePawnWithOtherFigure(Figure** pawnFigure);
+    void replaceFigure(Figure** pawnFigure, Figure* newFigure);
+    void deleteFigure(Figure* figureOnEndPosition);
 };
 
 #endif // FIGURESET_H
