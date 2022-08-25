@@ -12,7 +12,7 @@ RookFigure::RookFigure(FigureColor color) : Figure(color)
     _state = true;
 }
 
-bool RookFigure::isValidFigureMove(Field startPosition,Field nextPosition)
+bool RookFigure::isValidFigureMove(Field startPosition, Field nextPosition)
 {
    return isValidRookMove(startPosition,nextPosition);
 }
@@ -25,7 +25,7 @@ bool RookFigure::isValidRookMove(Field startPosition, Field nextPosition)
 
 std::vector<std::pair<int,int>> RookFigure::allPositionsBetweenCurrentAndNextPosition(Field nextPosition)
 {
-    return allPositionsBetweenRookAndNextPosition(_currentPosition,nextPosition);
+    return allPositionsBetweenRookAndNextPosition(_currentPositionPtr,nextPosition);
 }
 
 void RookFigure::fillAllowedMoves(std::vector<Figure*> figuresOnTable,
@@ -62,28 +62,28 @@ void RookFigure::fillAllowedMoves(std::vector<Figure*> figuresOnTable,
 std::vector<std::pair<int,int>> RookFigure::allAllowedMoves(
         std::vector<Figure*> figuresOnTable)
 {
-    return allAllowedRookMoves(_currentPosition,figuresOnTable,_color);
+    return allAllowedRookMoves(_currentPositionPtr,figuresOnTable,_color);
 }
 
 std::vector<std::pair<int,int>> RookFigure::allAllowedRookMoves(
-        Field* currentPosition, std::vector<Figure*> figuresOnTable, FigureColor color)
+        Field* currentPositionPtr, std::vector<Figure*> figuresOnTable, FigureColor color)
 {
     std::vector<std::pair<int,int>> allowedMoves;
 
     int initialRowValue;
     int initialColValue;
-    setInitialValues(currentPosition,initialRowValue,initialColValue);
+    setInitialValues(currentPositionPtr,initialRowValue,initialColValue);
 
     fillAllowedMoves(figuresOnTable,color,&allowedMoves,initialRowValue,initialColValue,1,0);
 
-    setInitialValues(currentPosition,initialRowValue,initialColValue);
+    setInitialValues(currentPositionPtr,initialRowValue,initialColValue);
 
     fillAllowedMoves(figuresOnTable,color,&allowedMoves,initialRowValue,initialColValue,-1,0);
 
-    setInitialValues(currentPosition,initialRowValue,initialColValue);
+    setInitialValues(currentPositionPtr,initialRowValue,initialColValue);
 
     fillAllowedMoves(figuresOnTable,color,&allowedMoves,initialRowValue,initialColValue,0,1);
-    setInitialValues(currentPosition,initialRowValue,initialColValue);
+    setInitialValues(currentPositionPtr,initialRowValue,initialColValue);
 
     fillAllowedMoves(figuresOnTable,color,&allowedMoves,initialRowValue,initialColValue,0,-1);
 
@@ -91,11 +91,11 @@ std::vector<std::pair<int,int>> RookFigure::allAllowedRookMoves(
 }
 
 std::vector<std::pair<int,int>> RookFigure::allPositionsBetweenRookAndNextPosition(
-        Field *currentPosition, Field nextPosition)
+        Field *currentPositionPtr, Field nextPosition)
 {
     std::vector<std::pair<int,int>> indexOfFields;
-    auto currentPositionRow = currentPosition->getRow();
-    auto currentPositionCol = currentPosition->getCol();
+    auto currentPositionRow = currentPositionPtr->getRow();
+    auto currentPositionCol = currentPositionPtr->getCol();
     auto nextPositionRow = nextPosition.getRow();
     auto nextPositionCol = nextPosition.getCol();
 

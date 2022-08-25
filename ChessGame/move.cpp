@@ -1,25 +1,25 @@
 #include "move.h"
 
-Move::Move(Field startPosition, Field endPosition, Figure* figure, Figure* eatenFigure)
+Move::Move(Field startPosition, Field endPosition, Figure* figurePtr, Figure* eatenFigurePtr)
     :_startPosition{ startPosition }, _endPosition{ endPosition },
-      _figure{ figure }, _eatenFigure{ eatenFigure }
+      _figurePtr{ figurePtr }, _eatenFigurePtr{ eatenFigurePtr }
 {
 }
 
 Move::~Move()
 {
-    _figure = nullptr;
-    _eatenFigure = nullptr;
+    _figurePtr = nullptr;
+    _eatenFigurePtr = nullptr;
 
 }
 Figure* Move::getEndFigure()
 {
-    return _eatenFigure;
+    return _eatenFigurePtr;
 }
 
 Figure* Move::getCurrentFigure()
 {
-    return _figure;
+    return _figurePtr;
 }
 
 Field* Move::getStartPosition()
@@ -35,30 +35,30 @@ Field* Move::getEndPosition()
 
 void Move::setEndFigure(Figure* figurePtr)
 {
-    _eatenFigure = figurePtr;
+    _eatenFigurePtr = figurePtr;
 }
 
 Figure* Move::getKingFigureInMove()
 {
-    return _figure->getType() == FigureName::king ? _figure : _eatenFigure;
+    return _figurePtr->getType() == FigureName::king ? _figurePtr : _eatenFigurePtr;
 }
 
 Figure* Move::getRookFigureInMove()
 {
-    return _figure->getType() == FigureName::rook ? _figure : _eatenFigure;
+    return _figurePtr->getType() == FigureName::rook ? _figurePtr : _eatenFigurePtr;
 }
 
 bool Move::isCastlingAllowed()
 {
-    FigureName firstFigureType = _figure->getType();
-    FigureName secondFigureType = _eatenFigure->getType();
+    FigureName firstFigureType = _figurePtr->getType();
+    FigureName secondFigureType = _eatenFigurePtr->getType();
 
     if ((firstFigureType != FigureName::king && firstFigureType != FigureName::rook) ||
             (secondFigureType != FigureName::king && secondFigureType != FigureName::rook))
     {
         return false;
     }
-    if (_figure->getColor() != _eatenFigure->getColor())
+    if (_figurePtr->getColor() != _eatenFigurePtr->getColor())
     {
         return false;
     }
@@ -73,7 +73,5 @@ MoveResultValue Move::invalidMove()
 
 bool Move::isCastling()
 {
-    if(getEndFigure() != nullptr && isCastlingAllowed())
-        return true;
-    return false;
+    return (getEndFigure() != nullptr && isCastlingAllowed());
 }

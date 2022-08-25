@@ -55,12 +55,13 @@ void Field::setCol(int col)
     _col = col;
 }
 
-InputResultValue Field::invalidField(Field* startField,Field* endField)
+InputResultValue Field::invalidField(Field* currentFieldPtr)
 {
-    if(startField == nullptr || endField == nullptr)
+    if(currentFieldPtr == nullptr)
     {
         TextLogger::logWarning("Please enter valid positions.");
         return InputResultValue::notValidInput;
     }
     return InputResultValue::validInput;
 }
+

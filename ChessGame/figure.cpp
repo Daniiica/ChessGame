@@ -1,7 +1,7 @@
 #include "figure.h"
 
-Figure::Figure(FigureColor color, FigureName type, Field* currentPosition)
-    :_color{color},_type{type},_currentPosition{currentPosition}
+Figure::Figure(FigureColor color, FigureName type, Field* currentPositionPtr)
+    :_color{color},_type{type},_currentPositionPtr{currentPositionPtr}
 {
 }
 
@@ -55,7 +55,7 @@ std::string Figure::getName()
 
 Field* Figure::getCurrentPosition()
 {
-    return _currentPosition;
+    return _currentPositionPtr;
 }
 
 FigureName Figure::getType()
@@ -98,16 +98,16 @@ bool Figure::getState()
     return _state;
 }
 
-void Figure::setCurrentPosition(Field* position)
+void Figure::setCurrentPosition(Field* positionPtr)
 {
-    _currentPosition = position;
+    _currentPositionPtr = positionPtr;
 }
 
 std::pair<int,int> Figure::getCurrentPositionPair()
 {
     std::pair<int,int> position;
-    position.first = _currentPosition->getRow();
-    position.second = _currentPosition->getCol();
+    position.first = _currentPositionPtr->getRow();
+    position.second = _currentPositionPtr->getCol();
     return position;
 }
 
@@ -123,7 +123,7 @@ void Figure::setEatenState()
 
 bool Figure::operator==(const Figure &rhs) const
 {
-    if(_color == rhs._color && _currentPosition == rhs._currentPosition
+    if(_color == rhs._color && _currentPositionPtr == rhs._currentPositionPtr
             && _type == rhs._type && _state == rhs._state)
     {
         return true;
@@ -131,10 +131,16 @@ bool Figure::operator==(const Figure &rhs) const
     return false;
 }
 
-void Figure::setInitialValues(Field* currentPosition, int& rowInitialValue, int& colInitialValue)
+Figure::~Figure()
 {
-    rowInitialValue = currentPosition->getRow();
-    colInitialValue = currentPosition->getCol();
+    _currentPositionPtr = nullptr;
+}
+
+void Figure::setInitialValues(Field* currentPositionPtr,
+                              int& rowInitialValue, int& colInitialValue)
+{
+    rowInitialValue = currentPositionPtr->getRow();
+    colInitialValue = currentPositionPtr->getCol();
 }
 
 bool Figure::isFigureOnEndTable(Field nextPosition)
@@ -157,18 +163,18 @@ int Figure::countPositionBetweenCurrentAndNextPosition(Field nextPosition)
     return positions.size();
 }
 
-MoveResultValue Figure::invalidStartFigure(Field* startField,
-                                           Figure* figureOnField, FigureColor color)
+MoveResultValue Figure::invalidStartFigure(Field* startFieldPtr,
+                                           Figure* figureOnFieldPtr, FigureColor color)
 {
-    auto startPosition = startField->getPosition();
-    if(figureOnField == nullptr)
+    auto startPosition = startFieldPtr->getPosition();
+    if(figureOnFieldPtr == nullptr)
     {
         TextLogger::logWarning("There is no figure on position " +
                                startPosition + ".");
         return MoveResultValue::notValidMove;
     }
 
-    if(figureOnField->getColor() != color)
+    if(figureOnFieldPtr->getColor() != color)
     {
         TextLogger::logWarning("The opponent's figure is on position " +
                                startPosition + ".");
@@ -177,13 +183,18 @@ MoveResultValue Figure::invalidStartFigure(Field* startField,
     return MoveResultValue::validMove;
 }
 
-MoveResultValue Figure::invalidEndFigure(Figure* startFigure,
-                                        Figure* endFigure)
+MoveResultValue Figure::invalidEndFigure(Figure* startFigurePtr,
+                                        Figure* endFigurePtr)
 {
-    if (endFigure != nullptr && endFigure->getColor() == startFigure->getColor())
+    if (endFigurePtr != nullptr && endFigurePtr->getColor() == startFigurePtr->getColor())
     {
         TextLogger::logWarning("Your figure is on end position.");
         return MoveResultValue::notValidMove;
     }
     return MoveResultValue::validMove;
+}
+
+void Figure::deleteCurrentPositionPtr()
+{
+    _currentPositionPtr = nullptr;
 }

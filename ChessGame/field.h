@@ -13,7 +13,6 @@ private:
    int _row;
    int _col;
    std::string _position;
-
 public:
     Field();
     Field(int row, int col, std::string value);
@@ -25,7 +24,7 @@ public:
     void setCol(int col);
     std::string getPosition();
     bool operator==(const Field &rhs) const;
-    static InputResultValue invalidField(Field* startField,Field* endField);
+    static InputResultValue invalidField(Field* currentFieldPtr);
 };
 
 #endif // FIELD_H

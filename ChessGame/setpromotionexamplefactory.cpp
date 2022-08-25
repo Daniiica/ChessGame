@@ -7,30 +7,37 @@ SetPromotionExampleFactory::SetPromotionExampleFactory()
 
 Table* SetPromotionExampleFactory::createTable()
 {
-    Table* table = new Table();
+    Table* tablePtr = new Table();
+    Field* fieldPtr;
     FigureSet blackFigureSet;
     blackFigureSet.setColor(FigureColor::Black);
     FigureSet whiteFigureSet;
     whiteFigureSet.setColor(FigureColor::White);
 
-    PawnFigure* pawn = new PawnFigure(FigureColor::White, table->getField(6, 4));
-    whiteFigureSet.addFigure(pawn);
+    fieldPtr = tablePtr->getField(6, 4);
+    PawnFigure* pawnPtr = new PawnFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(pawnPtr);
 
- /*   RookFigure* rook2 = new RookFigure(FigureColor::White, table->getField(0, 0));
-    whiteFigureSet.addFigure(rook2);
-    RookFigure* rook = new RookFigure(FigureColor::White, table->getField(0, 7));
-    whiteFigureSet.addFigure(rook);
-*/
-    KingFigure* kingB = new KingFigure(FigureColor::Black, table->getField(5, 4));
-    blackFigureSet.addFigure(kingB);
+    fieldPtr = tablePtr->getField(6, 6);
+    RookFigure* rook2Ptr = new RookFigure(FigureColor::Black, fieldPtr);
+    blackFigureSet.addFigure(rook2Ptr);
 
-    KingFigure* kingW = new KingFigure(FigureColor::White, table->getField(5, 1));
-    whiteFigureSet.addFigure(kingW);
+    fieldPtr = tablePtr->getField(7, 5);
+    RookFigure* rookPtr = new RookFigure(FigureColor::Black, fieldPtr);
+    blackFigureSet.addFigure(rookPtr);
+
+    fieldPtr = tablePtr->getField(5, 4);
+    KingFigure* kingBPtr = new KingFigure(FigureColor::Black, fieldPtr);
+    blackFigureSet.addFigure(kingBPtr);
+
+    fieldPtr = tablePtr->getField(6, 1);
+    KingFigure* kingWPtr = new KingFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(kingWPtr);
 
 
-    table->setFigureSet(blackFigureSet, 0);
-    table->setFigureSet(whiteFigureSet, 1);
+    tablePtr->setFigureSet(blackFigureSet, 0);
+    tablePtr->setFigureSet(whiteFigureSet, 1);
 
-    return table;
+    return tablePtr;
 
 }

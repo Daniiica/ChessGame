@@ -11,8 +11,8 @@ private:
 public:
     KnightFigure();
     KnightFigure(FigureColor color);
-    KnightFigure(FigureColor color, Field* currentPosition) :
-        Figure(color, FigureName::knight, currentPosition) {};
+    KnightFigure(FigureColor color, Field* currentPositionPtr) :
+        Figure(color, FigureName::knight, currentPositionPtr) {};
     bool isValidFigureMove(Field startPosition,Field nextPosition) override;
 
     std::vector<std::pair<int,int>> allAllowedMoves(std::vector<Figure*> figuresOnTable) override;

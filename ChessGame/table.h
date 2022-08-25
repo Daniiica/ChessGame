@@ -26,37 +26,35 @@ public:
     std::vector<Figure*> getAllFiguresOnTable();
     static std::vector<Figure*> getFiguresInColor(
             std::vector<Figure*> allFigures, FigureColor color);
-    void setFigureSet(FigureSet figures, int index);
-    Figure* getFigureOnField(Field position);
+    void setFigureSet(FigureSet& figureSet, int index);
+    Figure* getFigureOnField(const Field& position) const;
     Figure* getFigure(FigureColor color, FigureName name);
     bool isOtherFigureBetweenCurrentAndNextPosition(
             std::vector<std::pair<int,int>> indexOfPositions);
-    std::vector<Field*> convertIndexesInFields(
-            std::vector<std::pair<int,int>> indexOfPositions);
-    std::vector<std::pair<int,int>> convertFieldsToIndexesWithoutKing(
-            Figure* king);
-    static std::vector<std::pair<int,int>> convertFiguresPositionsToIndexes(
-            std::vector<Figure*> allFigures, FigureColor color);
     FigureSet* getFigureSet(FigureColor color);
-    std::vector<Figure*> getAllFiguresOnTableWithoutKing(Figure* king);
-    bool isFigureBetweenKingAndRook(Figure* king, Figure* rook);
+    std::vector<Figure*> getAllFiguresOnTableWithoutKing(Figure* kingPtr);
+    bool isFigureBetweenKingAndRook(Figure* kingPtr, Figure* rookPtr);
     MoveResultValue isValidMove(Move& move);
-    void undoMove(Field& startPosition, Figure* currentFigure, Figure* eatenFigure);
-    void moveFigure(Move& move, Field* endPosition);
-    MoveResultValue getResult(Move& move);
+    void undoMove(Field& startPosition, Move& move);
+    void moveFigure(Move& move);
     MoveResultValue checkChess(FigureColor kingColor,
                                      FigureColor currentFigureColor);
     bool checkIsPositionAttack(std::pair<int, int> position,
                                      std::vector<Figure*> allFigures,
                                      FigureColor attackersColor,
                                      int& howMuchFiguresAttackKing, Figure** figureWhoAttackKing);
-    MoveResultValue checkChessMat(Figure* king, int howMuchFiguresAttackKing,
-                                        Figure* figureWhoAttackKing);
-    bool canSomeFigureProtectKing(Figure* king, Figure* figureWhoAttackKing);
+    MoveResultValue checkChessMat(Figure* kingPtr, int howMuchFiguresAttackKing,
+                                        Figure* figureWhoAttackKingPtr);
+    bool canSomeFigureProtectKing(Figure* kingPtr, Figure* figureWhoAttackKingPtr);
     void castling(Move& move);
     bool isValidCastling(Move& move, bool castlingLongStatus, bool castlingShortStatus);
-    MoveResultValue isChessOrChessMat(Figure* currentFigure);
- //   void playMove(Move& move, Field* endPosition);
+    MoveResultValue isChessOrChessMat(Figure* currentFigurePtr);
+    void deleteEatenFigure(Figure* eatenFigurePtr);
+    void undoCastling(Move& move);
+    void pawnOnEndTable(Move& move);
+    void deleteAllFields();
+    void deleteAllFigures();
+    ~Table();
 };
 
 #endif // TABLE_H

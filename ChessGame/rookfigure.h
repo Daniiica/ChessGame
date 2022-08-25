@@ -12,8 +12,8 @@ class RookFigure : public Figure
 public:
     RookFigure();
     RookFigure(FigureColor color);
-    RookFigure(FigureColor color, Field* currentPosition) :
-        Figure(color, FigureName::rook, currentPosition) {};
+    RookFigure(FigureColor color, Field* currentPositionPtr) :
+        Figure(color, FigureName::rook, currentPositionPtr) {};
     bool isValidFigureMove(Field startPosition,Field nextPosition) override;
     std::vector<std::pair<int,int>> allPositionsBetweenCurrentAndNextPosition(
             Field nextPosition) override;
@@ -22,13 +22,13 @@ public:
     static bool isValidRookMove(Field startPosition, Field nextPosition);
     static void fillAllowedMoves(std::vector<Figure*> figuresOnTable,
                                  FigureColor color,
-                          std::vector<std::pair<int,int>>* allowedMoves,
+                          std::vector<std::pair<int,int>>* allowedMovesPtr,
                           int& initialPositionRow, int& initialPositionCol,
                           int isUpOrDown,int isLeftOrRight);
     static std::vector<std::pair<int,int>> allPositionsBetweenRookAndNextPosition(
-            Field* currentPosition,Field nextPosition);
+            Field* currentPositionPtr, Field nextPosition);
     static std::vector<std::pair<int,int>> allAllowedRookMoves(
-            Field* currentPositions, std::vector<Figure*> figuresOnTable, FigureColor color);
+            Field* currentPositionsPtr, std::vector<Figure*> figuresOnTable, FigureColor color);
 };
 
 #endif // ROOKFIGURE_H

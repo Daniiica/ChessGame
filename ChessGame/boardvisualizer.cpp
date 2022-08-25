@@ -9,7 +9,7 @@ void BoardVisualizer::printTable(Table& table)
 {
     std::string index;
     std::string name;
-    Field* position;
+    Field* positionPtr;
     FigureColor color;
     std::cout << std::endl;
 
@@ -40,8 +40,8 @@ void BoardVisualizer::printTable(Table& table)
                 }
                 else
                 {
-                    position = table.getField(index);
-                    color = table.getFigureOnField(*position)->getColor();
+                    positionPtr = table.getField(index);
+                    color = table.getFigureOnField(*positionPtr)->getColor();
                     TextLogger::logFigureName(name,color);
                     std::cout << "|";
                 }

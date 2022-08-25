@@ -24,17 +24,17 @@ std::vector<std::pair<int,int>> QueenFigure::allPositionsBetweenCurrentAndNextPo
 {
     std::vector<std::pair<int,int>> indexOfFields;
 
-    if(RookFigure::isValidRookMove(*_currentPosition,nextPosition))
+    if(RookFigure::isValidRookMove(*_currentPositionPtr, nextPosition))
     {
         auto rookPath = RookFigure::allPositionsBetweenRookAndNextPosition(
-                    _currentPosition,nextPosition);
-        indexOfFields.insert(indexOfFields.begin(),rookPath.begin(),rookPath.end());
+                    _currentPositionPtr, nextPosition);
+        indexOfFields.insert(indexOfFields.begin(), rookPath.begin(), rookPath.end());
     }
-    if(BishopFigure::isValidBishopMove(*_currentPosition,nextPosition))
+    if(BishopFigure::isValidBishopMove(*_currentPositionPtr, nextPosition))
     {
         auto bishopPath = BishopFigure::allPositionsBetweenBishopAndNextPosition(
-                    _currentPosition,nextPosition);
-        indexOfFields.insert(indexOfFields.end(),bishopPath.begin(),bishopPath.end());
+                    _currentPositionPtr, nextPosition);
+        indexOfFields.insert(indexOfFields.end(), bishopPath.begin(), bishopPath.end());
     }
     return indexOfFields;
 }
@@ -44,10 +44,10 @@ std::vector<std::pair<int,int>> QueenFigure::allAllowedMoves(
 {
     std::vector<std::pair<int,int>> allowedMoves;
 
-    allowedMoves = BishopFigure::allAllowedBishopMoves(_currentPosition,figuresOnTable,_color);
+    allowedMoves = BishopFigure::allAllowedBishopMoves(_currentPositionPtr, figuresOnTable, _color);
 
-    auto rookAllowedMoves = RookFigure::allAllowedRookMoves(_currentPosition,figuresOnTable,_color);
-    allowedMoves.insert(allowedMoves.end(),rookAllowedMoves.begin(),rookAllowedMoves.end());
+    auto rookAllowedMoves = RookFigure::allAllowedRookMoves(_currentPositionPtr, figuresOnTable, _color);
+    allowedMoves.insert(allowedMoves.end(), rookAllowedMoves.begin(), rookAllowedMoves.end());
 
     return allowedMoves;
 }

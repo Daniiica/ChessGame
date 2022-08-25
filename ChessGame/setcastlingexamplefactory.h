@@ -8,6 +8,7 @@ class SetCastlingExampleFactory : public ChessTableFactory
 public:
     SetCastlingExampleFactory();
     Table* createTable() override;
+    virtual ~SetCastlingExampleFactory()  { std::cout << "Destructor in SetCastling" << std::endl; };
 };
 
 #endif // SETCASTLINGEXAMPLEFACTORY_H

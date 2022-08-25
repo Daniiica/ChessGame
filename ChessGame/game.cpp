@@ -1,57 +1,67 @@
 #include "game.h"
 
-Game::Game(ChessTableFactory* tableFactory)
+Game::Game(ChessTableFactory* tableFactoryPtr)
 {
     _players[0] = Player(FigureColor::White);
     _players[1] = Player(FigureColor::Black);
-    _table = tableFactory->createTable();
+    _tablePtr = tableFactoryPtr->createTable();
 }
 
 MoveResultValue Game::getMoveResult(Player& player, Move& move)
 {
-    if(!move.isCastling()) // da promenim ime
+    if(!move.isCastling())
     {
-        auto currentFigure = move.getCurrentFigure();
-        auto secondFigure = move.getEndFigure();
+        auto currentFigurePtr = move.getCurrentFigure();
+        auto secondFigurePtr = move.getEndFigure();
 
-        if (Figure::invalidEndFigure(currentFigure, secondFigure) == MoveResultValue::notValidMove)
+        if (Figure::invalidEndFigure(currentFigurePtr, secondFigurePtr) == MoveResultValue::notValidMove)
             return MoveResultValue::notValidMove;
 
-        return _table->isValidMove(move);
+        return _tablePtr->isValidMove(move);
     }
     return castlingResult(player, move);
 }
 
-void Game::playMove(Move& move, Field* endPosition)
+void Game::playMove(Move& move)
 {
-    auto startPosition = move.getStartPosition();
-    auto eatenFigure = move.getEndFigure();
-    auto currentFigure = move.getCurrentFigure();
-    auto figureColor = currentFigure->getColor();
-    auto otherFigureColor = currentFigure->getOtherColor();
+    auto eatenFigurePtr = move.getEndFigure();
+    auto currentFigurePtr = move.getCurrentFigure();
 
-    _table->moveFigure(move, endPosition);
-
-    MoveResultValue isChess = _table->checkChess( figureColor, otherFigureColor);
-    if (isChess == MoveResultValue::chess)
+    if(eatenFigurePtr != nullptr && currentFigurePtr->getColor() == eatenFigurePtr->getColor())
     {
-        _table->undoMove(*startPosition, currentFigure, eatenFigure);
-        TextLogger::logWarning("Your king will be attack!");
+        _tablePtr->castling(move);
     }
-
+    else
+    {
+        _tablePtr->moveFigure(move);
+    }
 }
 
-bool Game::isChessMat(Figure* currentFigure)
+bool Game::isSelfChess(Figure* currentFigurePtr)
 {
-    if(_table->isChessOrChessMat(currentFigure) == MoveResultValue::chessMat)
-        return true;
-    return false;
+    auto figureColor = currentFigurePtr->getColor();
+    auto opponentsFigureColor = currentFigurePtr->getOtherColor();
+
+    return _tablePtr->checkChess(figureColor, opponentsFigureColor) == MoveResultValue::chess ?
+           true : false;
 }
 
-void Game::doCastling(Player& player, Move& move)
+void Game::cancelMove(Field* startPositionPtr, Move& move)
 {
-    _table->castling(move);
-    player.disableCastlingStatus();
+    _tablePtr->undoMove(*startPositionPtr, move);
+    TextLogger::logWarning("Your king will be attack!");
+}
+
+Game::~Game()
+{
+    delete _tablePtr;
+    _tablePtr = nullptr;
+}
+
+bool Game::isChessMat(Figure* currentFigurePtr)
+{
+    return _tablePtr->isChessOrChessMat(currentFigurePtr) == MoveResultValue::chessMat ?
+                true : false;
 }
 
 MoveResultValue Game::castlingResult(Player& player, Move& move)
@@ -59,9 +69,8 @@ MoveResultValue Game::castlingResult(Player& player, Move& move)
     auto castlingLongStatus = player.getCastlingLongStatus();
     auto castlingShortStatus = player.getCastlingShortStatus();
 
-    if(_table->isValidCastling(move, castlingLongStatus, castlingShortStatus))
+    if(_tablePtr->isValidCastling(move, castlingLongStatus, castlingShortStatus))
     {
-        doCastling(player, move);
         return MoveResultValue::validMove;
     }
     else
@@ -71,11 +80,11 @@ MoveResultValue Game::castlingResult(Player& player, Move& move)
     }
 }
 
-bool Game::startFigureValidation(Player& player, Field* startPosition)
+bool Game::startFigureValidation(Player& player, Field* startPositionPtr)
 {
     FigureColor playerColor = player.getColor();
-    Figure* figureOnStartPosition = _table->getFigureOnField(*startPosition);
-    auto validationStartFigure = Figure::invalidStartFigure(startPosition, figureOnStartPosition, playerColor);
+    Figure* figureOnStartPositionPtr = _tablePtr->getFigureOnField(*startPositionPtr);
+    auto validationStartFigure = Figure::invalidStartFigure(startPositionPtr, figureOnStartPositionPtr, playerColor);
 
     return validationStartFigure == MoveResultValue::notValidMove ? false : true;
 }
@@ -93,11 +102,12 @@ InputResultValue Game::getInputResult(std::string& userFirstInput, std::string& 
     if(isEndGame(userFirstInput))
         return InputResultValue::exit;
 
-    *startPosition = _table->getField(userFirstInput);
-    *endPosition = _table->getField(userSecondInput);
+    *startPosition = _tablePtr->getField(userFirstInput);
+    *endPosition = _tablePtr->getField(userSecondInput);
 
-    if(Field::invalidField(*startPosition, *endPosition) == InputResultValue::notValidInput) // samo da vrati rezultat fje i da bude isInvalidField
-        return InputResultValue::notValidInput; // bolje 2x da zovem fju
+    if(Field::invalidField(*startPosition) == InputResultValue::notValidInput ||
+            Field::invalidField(*endPosition) == InputResultValue::notValidInput)
+        return InputResultValue::notValidInput;
     return InputResultValue::validInput;
 }
 
@@ -116,25 +126,25 @@ bool Game::isEndGame(std::string userFirstInput)
 void Game::start()
 {
     TextLogger::logTitle("Welcome to Chess!");
-    BoardVisualizer::printTable(*_table);
+    BoardVisualizer::printTable(*_tablePtr);
 
     run();
 }
 
 Table* Game::getTable()
 {
-    return _table;
+    return _tablePtr;
 }
 void Game::run()
 {
-    std::string userFirstInput {}; // = "";
+    std::string userFirstInput {};
     std::string userSecondInput {};
     int playerIndex = 0;
 
-    Field* startPosition = nullptr;
-    Field* endPosition = nullptr;
-    Figure* currentFigure = nullptr;
-    Figure* eatenFigure = nullptr;
+    Field* startPositionPtr = nullptr;
+    Field* endPositionPtr = nullptr;
+    Figure* currentFigurePtr = nullptr;
+    Figure* eatenFigurePtr = nullptr;
 
     bool isChess = false;
     InputResultValue inputResultValue = InputResultValue::validInput;
@@ -145,19 +155,41 @@ void Game::run()
         outputTitle(_players[playerIndex]);
         setInputPositions(userFirstInput, userSecondInput);
         inputResultValue = getInputResult(userFirstInput, userSecondInput,
-                                          &startPosition, &endPosition);
+                                          &startPositionPtr, &endPositionPtr);
         if(inputResultValue == InputResultValue::validInput &&
-                startFigureValidation(_players[playerIndex], startPosition))
+                startFigureValidation(_players[playerIndex], startPositionPtr))
         {
-            currentFigure = _table->getFigureOnField(*startPosition);
-            eatenFigure = _table->getFigureOnField(*endPosition);
-            Move move(*startPosition, *endPosition, currentFigure, eatenFigure);
+            currentFigurePtr = _tablePtr->getFigureOnField(*startPositionPtr);
+            eatenFigurePtr = _tablePtr->getFigureOnField(*endPositionPtr);
+            Move move(*startPositionPtr, *endPositionPtr, currentFigurePtr, eatenFigurePtr);
+
             if(getMoveResult(_players[playerIndex], move) == MoveResultValue::validMove)
             {
-                playMove(move, endPosition);
-                changePlayer(playerIndex);
-                BoardVisualizer::printTable(*_table);
-                isChess = isChessMat(currentFigure);
+                playMove(move);
+
+                if(isSelfChess(currentFigurePtr))
+                {
+                    cancelMove(startPositionPtr, move);
+                }
+                else
+                {
+                    _tablePtr->pawnOnEndTable(move);
+                    if(eatenFigurePtr != nullptr)
+                    {
+                        if(currentFigurePtr->getColor() == eatenFigurePtr->getColor())
+                        {
+                            _players[playerIndex].disableCastlingStatus();
+                        }
+                        else
+                        {
+                            _tablePtr->deleteEatenFigure(eatenFigurePtr);
+                        }
+                    }
+                    _players[playerIndex].changeCastlingStatus(currentFigurePtr, startPositionPtr);
+                    changePlayer(playerIndex);
+                    BoardVisualizer::printTable(*_tablePtr);
+                    isChess = isChessMat(currentFigurePtr);
+                }
             }
         }
     }
@@ -167,3 +199,4 @@ void Game::changePlayer(int& playersIndex)
 {
     playersIndex == 0 ? playersIndex++ : playersIndex--;
 }
+

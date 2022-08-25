@@ -61,7 +61,7 @@ std::vector<std::pair<int,int>> KnightFigure::allAllowedMoves(
 
     int initialRowValue;
     int initialColValue;
-    setInitialValues(_currentPosition,initialRowValue,initialColValue);
+    setInitialValues(_currentPositionPtr,initialRowValue,initialColValue);
 
     for(int i = 1 ; i < 3 ; i++)
     {

@@ -10,10 +10,12 @@
 #include "setcastlingexamplefactory.h"
 #include "setpromotionexamplefactory.h"
 
+
 int main()
 {
-    SetChessMatExampleFactory* tableFactory = new SetChessMatExampleFactory();
-    Game game(tableFactory);
+    SetPromotionExampleFactory* tableFactoryPtr = new SetPromotionExampleFactory();
+    Game game(tableFactoryPtr);
     game.start();
+
     return 0;
 }

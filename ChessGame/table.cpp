@@ -3,7 +3,9 @@
 
 Table::Table()
 {
-    _fields = new Field *[8];
+    _figuresOnTable[0].setColor(FigureColor::Black);
+    _figuresOnTable[1].setColor(FigureColor::White);
+    _fields = new Field*[8];
     for(int i = 0; i < 8; i++)
         _fields[i] = new Field[8];
 
@@ -18,7 +20,6 @@ Table::Table()
         }
     }
     createIndexOfTable(_fields);
-
 }
 
 void Table::createIndexOfTable(Field** field)
@@ -89,25 +90,25 @@ std::vector<Figure*> Table::getAllFiguresOnTable()
     std::vector<Figure*> allFiguresOnTable;
     for(auto figureSet : getFiguresOnTable())
     {
-        for(auto figure : figureSet.getAllFigures())
+        for(auto figurePtr : figureSet.getAllFigures())
         {
-            if(figure->getState() == true && figure->getCurrentPosition() != nullptr)
-            allFiguresOnTable.emplace_back(figure);
+            if(figurePtr->getState() == true && figurePtr->getCurrentPosition() != nullptr)
+                allFiguresOnTable.emplace_back(figurePtr);
         }
     }
     return allFiguresOnTable;
 }
 
-std::vector<Figure*> Table::getAllFiguresOnTableWithoutKing(Figure* king)
+std::vector<Figure*> Table::getAllFiguresOnTableWithoutKing(Figure* kingPtr)
 {
     std::vector<Figure*> allFiguresOnTable;
     for(auto figureSet : getFiguresOnTable())
     {
-        for(auto figure : figureSet.getAllFigures())
+        for(auto figurePtr : figureSet.getAllFigures())
         {
-            if(figure->getState() == true && figure->getCurrentPosition() != nullptr
-                    && figure != king)
-            allFiguresOnTable.emplace_back(figure);
+            if(figurePtr->getState() == true && figurePtr->getCurrentPosition() != nullptr
+                    && figurePtr != kingPtr)
+                allFiguresOnTable.emplace_back(figurePtr);
         }
     }
     return allFiguresOnTable;
@@ -116,42 +117,32 @@ std::vector<Figure*> Table::getAllFiguresOnTableWithoutKing(Figure* king)
 std::vector<Figure*> Table::getFiguresInColor(std::vector<Figure*> allFigures, FigureColor color)
 {
     std::vector<Figure*> figuresInSameColor;
-    for(auto figures : allFigures)
+    for(auto figuresPtr : allFigures)
     {
-        if(figures->getColor() == color && figures->getType() != FigureName::king)
+        if(figuresPtr->getColor() == color && figuresPtr->getType() != FigureName::king)
         {
-            figuresInSameColor.emplace_back(figures);
+            figuresInSameColor.emplace_back(figuresPtr);
         }
     }
     return figuresInSameColor;
 }
 
-std::vector<std::pair<int,int>> Table::convertFiguresPositionsToIndexes(
-        std::vector<Figure*> allFigures, FigureColor color)
+void Table::setFigureSet(FigureSet& figureSet, int index)
 {
-    std::vector<std::pair<int,int>> allPositionIndexesForFigures;
-    std::pair<int,int> figurePositionPair;
-    for(auto figure : allFigures)
-    {
-        figurePositionPair = figure->getCurrentPositionPair();
-        allPositionIndexesForFigures.emplace_back(figurePositionPair);
-    }
-    return allPositionIndexesForFigures;
-}
-
-void Table::setFigureSet(FigureSet figures, int index)
-{
-    _figuresOnTable[index] = figures;
+    auto color = figureSet.getColor();
+    _figuresOnTable[index].setColor(color);
+    auto figures = figureSet.getAllFigures();
+    _figuresOnTable[index].setFigures(figures);
 }
 
 Figure* Table::getFigure(FigureColor color, FigureName name)
 {
-    FigureSet* figureSet = getFigureSet(color);
-    for(auto figure : figureSet->getAllFigures())
+    FigureSet* figureSetPtr = getFigureSet(color);
+    for(auto figurePtr : figureSetPtr->getAllFigures())
     {
-        if(figure->getType() == name)
+        if(figurePtr->getType() == name)
         {
-            return figure;
+            return figurePtr;
         }
     }
     return nullptr;
@@ -160,22 +151,22 @@ Figure* Table::getFigure(FigureColor color, FigureName name)
 FigureSet* Table::getFigureSet(FigureColor color)
 {
     return color == FigureColor::Black ? &_figuresOnTable[0] : &_figuresOnTable[1];
-}
+    }
 
-bool Table::isOtherFigureBetweenCurrentAndNextPosition(
-        std::vector<std::pair<int,int>> indexOfPositions)
-{
+    bool Table::isOtherFigureBetweenCurrentAndNextPosition(
+    std::vector<std::pair<int,int>> indexOfPositions)
+    {
     std::vector<Figure*> allFigures;
     for(auto field : indexOfPositions)
     {
         for(auto figureSet : _figuresOnTable)
         {
             allFigures = figureSet.getAllFigures();
-            for(auto figure : allFigures)
+            for(auto figurePtr : allFigures)
             {
-                if(figure->getState() == true &&
-                        figure->getCurrentPosition() != nullptr &&
-                        *(figure->getCurrentPosition()) == _fields[field.first][field.second])
+                if(figurePtr->getState() == true &&
+                        figurePtr->getCurrentPosition() != nullptr &&
+                        *(figurePtr->getCurrentPosition()) == _fields[field.first][field.second])
                 {
                     return true;
                 }
@@ -185,69 +176,31 @@ bool Table::isOtherFigureBetweenCurrentAndNextPosition(
     return false;
 }
 
-std::vector<Field*> Table::convertIndexesInFields(
-        std::vector<std::pair<int,int>> indexOfPositions)
-{
-    std::vector<Field*> allowedFields;
-
-    for(auto field : indexOfPositions)
-    {
-        for(auto figureSet : _figuresOnTable)
-        {
-            for(auto figure : figureSet.getAllFigures())
-            {
-                if(*(figure->getCurrentPosition()) == _fields[field.first][field.second])
-                {
-                    allowedFields.emplace_back(&_fields[field.first][field.second]);
-                }
-            }
-        }
-    }
-    return allowedFields;
-}
-
-std::vector<std::pair<int,int>> Table::convertFieldsToIndexesWithoutKing(Figure* king)
-{
-    std::vector<std::pair<int,int>> indexes;
-    for(auto figureSet : _figuresOnTable)
-    {
-        for(auto figures : figureSet.getAllFigures())
-        {
-            if(figures != king && figures->getState() == true)
-            {
-                indexes.emplace_back(std::pair(figures->getCurrentPosition()->getRow(),
-                                               figures->getCurrentPosition()->getCol()));
-            }
-        }
-    }
-    return indexes;
-}
-
-Figure* Table::getFigureOnField(Field position)
+Figure* Table::getFigureOnField(const Field& position) const
 {
     for(auto figureSet : _figuresOnTable)
     {
-        for(auto figure : figureSet.getAllFigures())
+        for(auto figurePtr : figureSet.getAllFigures())
         {
-            if(figure != nullptr && figure->getState() == true &&
-                    *(figure->getCurrentPosition()) == position)
+            if(figurePtr != nullptr && figurePtr->getState() == true &&
+                    *(figurePtr->getCurrentPosition()) == position)
             {
-                return figure;
+                return figurePtr;
             }
         }
     }
     return nullptr;
 }
 
-bool Table::isFigureBetweenKingAndRook(Figure* king, Figure* rook)
+bool Table::isFigureBetweenKingAndRook(Figure* kingPtr, Figure* rookPtr)
 {
-    auto kingPosition = king->getCurrentPosition();
-    auto path = rook->allPositionsBetweenCurrentAndNextPosition(*kingPosition);
-    Field* positionInPath;
+    auto kingPositionPtr = kingPtr->getCurrentPosition();
+    auto path = rookPtr->allPositionsBetweenCurrentAndNextPosition(*kingPositionPtr);
+    Field* positionInPathPtr;
     for (auto field : path)
     {
-        positionInPath = getField(field.first, field.second);
-        if (getFigureOnField(*positionInPath) != nullptr)
+        positionInPathPtr = getField(field.first, field.second);
+        if (getFigureOnField(*positionInPathPtr) != nullptr)
         {
             TextLogger::logWarning("There are figures between king and rook!");
             return false;
@@ -256,37 +209,24 @@ bool Table::isFigureBetweenKingAndRook(Figure* king, Figure* rook)
     return true;
 }
 
-//void Table::playMove(Move& move, Field* endPosition)
-//{
-//    auto startPosition = move.getStartPosition();
-//    auto eatenFigure = move.getEndFigure();
-//    auto currentFigure = move.getCurrentFigure();
-//    auto figureColor = currentFigure->getColor();
-//    auto otherFigureColor = currentFigure->getOtherColor();
-//    if(isValidMove(move) != MoveResultValue::notValidMove)
-//    {
-//        moveFigure(move, endPosition);
+void Table::deleteEatenFigure(Figure* eatenFigurePtr)
+{
+    FigureColor figureColor = eatenFigurePtr->getColor();
+    FigureSet* figureSetPtr = getFigureSet(figureColor);
 
-//        MoveResultValue isChess = checkChess( figureColor, otherFigureColor);
-//        if (isChess == MoveResultValue::chess)
-//        {
-//            undoMove(*startPosition, currentFigure, eatenFigure);
-//            TextLogger::logWarning("Your king will be attack!");
-//        }
-//    }
-//}
+    figureSetPtr->deleteFigure(eatenFigurePtr);
+}
 
 MoveResultValue Table::isValidMove(Move& move)
 {
-    auto currentFigure = move.getCurrentFigure();
-    auto endPosition = move.getEndPosition();
-    FigureColor figureColor = currentFigure->getColor();
-    FigureSet* figureSetInFigureColor = getFigureSet(figureColor);
-    FigureName figureType = currentFigure->getType();
-    Figure* figureOnEndPosition = getFigureOnField(*endPosition);
-    Field* startPosition = currentFigure->getCurrentPosition();
+    auto currentFigurePtr = move.getCurrentFigure();
+    auto endPositionPtr = move.getEndPosition();
+    FigureColor figureColor = currentFigurePtr->getColor();
+    FigureName figureType = currentFigurePtr->getType();
+    Figure* figureOnEndPositionPtr = getFigureOnField(*endPositionPtr);
+    Field* startPositionPtr = currentFigurePtr->getCurrentPosition();
 
-    if (currentFigure->isValidFigureMove(*startPosition, *endPosition))
+    if (currentFigurePtr->isValidFigureMove(*startPositionPtr, *endPositionPtr))
     {
         if (figureType == FigureName::bishop ||
                 figureType == FigureName::rook ||
@@ -295,105 +235,106 @@ MoveResultValue Table::isValidMove(Move& move)
         {
             if (figureType == FigureName::pawn)
             {
-                if(!PawnFigure::checkPawnMove(startPosition, endPosition,
-                                              figureOnEndPosition, figureColor))
+                if(!PawnFigure::checkPawnMove(startPositionPtr, endPositionPtr,
+                                              figureOnEndPositionPtr, figureColor))
                     return MoveResultValue::notValidMove;
-                if (currentFigure->isFigureOnEndTable(*endPosition)) {
-                    figureSetInFigureColor->changePawnWithOtherFigure(&currentFigure);
-                }
             }
             if(isOtherFigureBetweenCurrentAndNextPosition(
-                        currentFigure->allPositionsBetweenCurrentAndNextPosition(*endPosition)))
+                        currentFigurePtr->
+                        allPositionsBetweenCurrentAndNextPosition(*endPositionPtr)))
                 return MoveResultValue::notValidMove;
         }
         return MoveResultValue::validMove;
     }
-    return MoveResultValue::notValidMove;
+    return Move::invalidMove();
 }
 
-void Table::undoMove(Field& startPosition, Figure* currentFigure, Figure* eatenFigure)
+void Table::undoMove(Field& startPosition, Move& move)
 {
-    if (eatenFigure != nullptr)
+    auto currentFigurePtr = move.getCurrentFigure();
+    auto eatenFigurePtr = move.getEndFigure();
+
+    if (eatenFigurePtr != nullptr)
     {
-        auto currentPosition = currentFigure->getCurrentPosition();
-        eatenFigure->setCurrentPosition(currentPosition);
-        eatenFigure->setActiveState();
-    }
-    currentFigure->setCurrentPosition(&startPosition);
-}
-
-void Table::moveFigure(Move& move, Field* endPosition)
-{
-    auto currentFigure = move.getCurrentFigure();
-    auto currentFigureColor = currentFigure->getColor();
-    auto figureOnEndPosition = move.getEndFigure();
-
-    if (figureOnEndPosition != nullptr)
-    {
-        getFigureSet(currentFigureColor)->deleteFigure(figureOnEndPosition);
-    }
-    currentFigure->setCurrentPosition(endPosition);
-    //move.getCurrentFigure()->setCurrentPosition(&endPosition);
-}
-
-MoveResultValue Table::getResult(Move& move)
-{
-    Figure* currentFigure = move.getCurrentFigure();
-    Figure* eatenFigure = move.getEndFigure();
-    FigureColor figureColor = currentFigure->getColor();
-    FigureColor otherFigureColor = currentFigure->getOtherColor();
-    Field* startPosition = currentFigure->getCurrentPosition();
-
-    auto moveValidation = isValidMove(move);
-    if(moveValidation == MoveResultValue::validMove)
-    {
-        MoveResultValue isChess = checkChess( figureColor, otherFigureColor);
-        if (isChess == MoveResultValue::chess || isChess == MoveResultValue::chessMat)
+        if(currentFigurePtr->getColor() == eatenFigurePtr->getColor())
         {
-            undoMove(*startPosition, currentFigure, eatenFigure);
-            TextLogger::logWarning("Your king will be attack!");
-            return MoveResultValue::notValidMove;
+            undoCastling(move);
+            return;
         }
-        return MoveResultValue::validMove;
+        auto currentPosition = currentFigurePtr->getCurrentPosition();
+        eatenFigurePtr->setCurrentPosition(currentPosition);
+        eatenFigurePtr->setActiveState();
     }
-    return MoveResultValue::notValidMove;
+    currentFigurePtr->setCurrentPosition(&startPosition);
+}
+
+void Table::undoCastling(Move& move)
+{
+    auto kingFigurePtr = move.getKingFigureInMove();
+    auto rookFigurePtr = move.getRookFigureInMove();
+
+    auto startPositionPtr = getField(move.getStartPosition()->getPosition());
+    auto endPositionPtr = getField(move.getEndPosition()->getPosition());
+
+    auto kingPositionPtr = move.getCurrentFigure() == kingFigurePtr ?
+                startPositionPtr : endPositionPtr;
+    auto rookPositionPtr = move.getCurrentFigure() == rookFigurePtr ?
+                startPositionPtr : endPositionPtr;
+
+    kingFigurePtr->setCurrentPosition(kingPositionPtr);
+    rookFigurePtr->setCurrentPosition(rookPositionPtr);
+}
+
+void Table::moveFigure(Move& move)
+{
+    auto currentFigurePtr = move.getCurrentFigure();
+    auto figureOnEndPositionPtr = move.getEndFigure();
+    auto endPositionName = move.getEndPosition()->getPosition();
+    auto endPositionPtr = getField(endPositionName);
+
+    if (figureOnEndPositionPtr != nullptr)
+    {
+        figureOnEndPositionPtr->setCurrentPosition(nullptr);
+        figureOnEndPositionPtr->setEatenState();
+    }
+    currentFigurePtr->setCurrentPosition(endPositionPtr);
 }
 
 MoveResultValue Table::checkChess(FigureColor kingColor,
-                                 FigureColor currentFigureColor)
+                                  FigureColor currentFigureColor)
 {
     auto allFiguresOnTable = getAllFiguresOnTable();
-    Figure* king = getFigure(kingColor, FigureName::king);
-    auto kingPositionRow = king->getCurrentPosition()->getRow();
-    auto kingPositionCol = king->getCurrentPosition()->getCol();
+    Figure* kingPtr = getFigure(kingColor, FigureName::king);
+    auto kingPositionRow = kingPtr->getCurrentPosition()->getRow();
+    auto kingPositionCol = kingPtr->getCurrentPosition()->getCol();
     std::pair<int, int> kingPosition(kingPositionRow, kingPositionCol);
     int howMuchFiguresAttackKing = 0;
-    Figure* figureWhoAttackKing = nullptr;
+    Figure* figureWhoAttackKingPtr = nullptr;
 
     if (checkIsPositionAttack(kingPosition, allFiguresOnTable,
                               currentFigureColor,
-                              howMuchFiguresAttackKing, &figureWhoAttackKing))
+                              howMuchFiguresAttackKing, &figureWhoAttackKingPtr))
     {
-        if(king->getColor() == currentFigureColor)
+        if(kingPtr->getColor() == currentFigureColor)
             return MoveResultValue::chess;
-        return checkChessMat(king, howMuchFiguresAttackKing, figureWhoAttackKing);
+        return checkChessMat(kingPtr, howMuchFiguresAttackKing, figureWhoAttackKingPtr);
     }
     return MoveResultValue::validMove;
 }
 
 bool Table::checkIsPositionAttack(std::pair<int, int> position,
-                                 std::vector<Figure*> allFigures,
-                                 FigureColor attackersColor,
-                                 int& howMuchFiguresAttackKing, Figure** figureWhoAttackKing)
+                                  std::vector<Figure*> allFigures,
+                                  FigureColor attackersColor,
+                                  int& howMuchFiguresAttackKing, Figure** figureWhoAttackKing)
 {
-    for (auto figures : Table::getFiguresInColor(allFigures,attackersColor))
+    for (auto figuresPtr : Table::getFiguresInColor(allFigures,attackersColor))
     {
-        auto allowedMovesPerFigure = figures->allAllowedMoves(allFigures);
+        auto allowedMovesPerFigure = figuresPtr->allAllowedMoves(allFigures);
         if (std::find(allowedMovesPerFigure.begin(), allowedMovesPerFigure.end(),
                       position) != allowedMovesPerFigure.end())
         {
             howMuchFiguresAttackKing++;
-            *figureWhoAttackKing = figures;
+            *figureWhoAttackKing = figuresPtr;
         }
     }
 
@@ -404,19 +345,19 @@ bool Table::checkIsPositionAttack(std::pair<int, int> position,
     return true;
 }
 
-MoveResultValue Table::checkChessMat(Figure* king, int howMuchFiguresAttackKing,
-                                    Figure* figureWhoAttackKing)
+MoveResultValue Table::checkChessMat(Figure* kingPtr, int howMuchFiguresAttackKing,
+                                     Figure* figureWhoAttackKingPtr)
 {
     int howMuchFiguresAttackPositionArroundKing = 0;
-    Figure* figureWhoAttackPositionArroundKing = nullptr;
-    FigureColor kingColor = king->getColor();
-    FigureColor differentColorOfKing = king -> getOtherColor();
+    Figure* figureWhoAttackPositionArroundKingPtr = nullptr;
+    FigureColor kingColor = kingPtr->getColor();
+    FigureColor differentColorOfKing = kingPtr -> getOtherColor();
     auto allFiguresOnTable = getAllFiguresOnTable();
-    auto allFiguresOnTableWithoutKing = getAllFiguresOnTableWithoutKing(king);
+    auto allFiguresOnTableWithoutKing = getAllFiguresOnTableWithoutKing(kingPtr);
     auto allFiguresInKingsColor = Table::getFiguresInColor(allFiguresOnTable, kingColor);
     std::vector<std::pair<int, int>> allAllowedKingMoves =
-            king->allAllowedMoves(allFiguresInKingsColor);
-    std::pair<int, int> figureCurrentPosition = figureWhoAttackKing->getCurrentPositionPair();
+            kingPtr->allAllowedMoves(allFiguresInKingsColor);
+    std::pair<int, int> figureCurrentPosition = figureWhoAttackKingPtr->getCurrentPositionPair();
 
     for (auto position : allAllowedKingMoves)
     {
@@ -424,42 +365,42 @@ MoveResultValue Table::checkChessMat(Figure* king, int howMuchFiguresAttackKing,
         if (!checkIsPositionAttack(position, allFiguresOnTableWithoutKing,
                                    differentColorOfKing,
                                    howMuchFiguresAttackPositionArroundKing,
-                                   &figureWhoAttackPositionArroundKing))
+                                   &figureWhoAttackPositionArroundKingPtr))
         {
             return MoveResultValue::chess;
         }
     }
-    if (howMuchFiguresAttackKing == 1 && figureWhoAttackKing->getType() != FigureName::knight)
+    if (howMuchFiguresAttackKing == 1 && figureWhoAttackKingPtr->getType() != FigureName::knight)
     {
         if (std::find(allAllowedKingMoves.begin(), allAllowedKingMoves.end(),
                       figureCurrentPosition) != allAllowedKingMoves.end())
         {
             return MoveResultValue::chess;
         }
-        if (canSomeFigureProtectKing(king, figureWhoAttackKing))
+        if (canSomeFigureProtectKing(kingPtr, figureWhoAttackKingPtr))
             return MoveResultValue::chess;
         return MoveResultValue::chessMat;
     }
     return MoveResultValue::chessMat;
 }
 
-bool Table::canSomeFigureProtectKing(Figure* king, Figure* figureWhoAttackKing)
+bool Table::canSomeFigureProtectKing(Figure* kingPtr, Figure* figureWhoAttackKingPtr)
 {
-    FigureColor kingColor = king->getColor();
+    FigureColor kingColor = kingPtr->getColor();
     auto allFiguresOnTable = getAllFiguresOnTable();
-    Field kingPosition = *(king->getCurrentPosition());
-    auto figureWhoAttackKingPairPos = figureWhoAttackKing->getCurrentPositionPair();
-    auto kingColorFigureSet = getFigureSet(kingColor);
+    Field kingPosition = *(kingPtr->getCurrentPosition());
+    auto figureWhoAttackKingPairPos = figureWhoAttackKingPtr->getCurrentPositionPair();
+    auto kingColorFigureSetPtr = getFigureSet(kingColor);
     std::vector<std::pair<int, int>> pathBetweenFigureAndKing =
-            figureWhoAttackKing->allPositionsBetweenCurrentAndNextPosition(kingPosition);
+            figureWhoAttackKingPtr->allPositionsBetweenCurrentAndNextPosition(kingPosition);
     pathBetweenFigureAndKing.emplace_back(figureWhoAttackKingPairPos);
     int howMuchFiguresAttackKing = 0;
-    auto allFiguresWithoutKing = kingColorFigureSet -> getFiguresWithoutKing();
+    auto allFiguresWithoutKing = kingColorFigureSetPtr->getFiguresWithoutKing();
     for (auto position : pathBetweenFigureAndKing)
     {
         if (checkIsPositionAttack(position, allFiguresOnTable, kingColor,
-                                  howMuchFiguresAttackKing, &figureWhoAttackKing) &&
-                figureWhoAttackKing->getType() != FigureName::king)
+                                  howMuchFiguresAttackKing, &figureWhoAttackKingPtr) &&
+                figureWhoAttackKingPtr->getType() != FigureName::king)
             return true;
     }
     return false;
@@ -467,14 +408,14 @@ bool Table::canSomeFigureProtectKing(Figure* king, Figure* figureWhoAttackKing)
 
 void Table::castling(Move& move)
 {
-    auto king = move.getKingFigureInMove();
-    auto rook = move.getRookFigureInMove();
-    int kingPositionCol = king->getCurrentPosition()->getCol();
-    int kingPositionRow = king->getCurrentPosition()->getRow();
-    int rookPositionCol = rook->getCurrentPosition()->getCol();
+    auto kingPtr = move.getKingFigureInMove();
+    auto rookPtr = move.getRookFigureInMove();
+    int kingPositionCol = kingPtr->getCurrentPosition()->getCol();
+    int kingPositionRow = kingPtr->getCurrentPosition()->getRow();
+    int rookPositionCol = rookPtr->getCurrentPosition()->getCol();
 
-    Field* newKingPosition;
-    Field* newRookPosition;
+    Field* newKingPositionPtr;
+    Field* newRookPositionPtr;
     int kingDifference;
     int rookDifference;
 
@@ -489,33 +430,33 @@ void Table::castling(Move& move)
         kingDifference = -2;
         rookDifference = 3;
     }
-    newKingPosition = getField(kingPositionRow, kingPositionCol + kingDifference);
-    king->setCurrentPosition(newKingPosition);
-    newRookPosition = getField(kingPositionRow, rookPositionCol + rookDifference);
-    rook->setCurrentPosition(newRookPosition);
+    newKingPositionPtr = getField(kingPositionRow, kingPositionCol + kingDifference);
+    kingPtr->setCurrentPosition(newKingPositionPtr);
+    newRookPositionPtr = getField(kingPositionRow, rookPositionCol + rookDifference);
+    rookPtr->setCurrentPosition(newRookPositionPtr);
 }
 
 bool Table::isValidCastling(Move& move, bool castlingLongStatus, bool castlingShortStatus)
 {
-    auto king = move.getKingFigureInMove();
-    auto rook = move.getRookFigureInMove();
-    auto rookPosition = rook->getCurrentPosition();
-    auto distanceBetweenKingAndRook = king->
-            countPositionBetweenCurrentAndNextPosition(*rookPosition);
+    auto kingPtr = move.getKingFigureInMove();
+    auto rookPtr = move.getRookFigureInMove();
+    auto rookPositionPtr = rookPtr->getCurrentPosition();
+    auto distanceBetweenKingAndRook = kingPtr->
+            countPositionBetweenCurrentAndNextPosition(*rookPositionPtr);
     bool isCastlingAllowed = distanceBetweenKingAndRook > 2 ?
                 castlingLongStatus : castlingShortStatus;
     if(isCastlingAllowed == true)
     {
-        if(!isFigureBetweenKingAndRook(king,rook))
+        if(!isFigureBetweenKingAndRook(kingPtr, rookPtr))
             return false;
     }
     return isCastlingAllowed;
 }
 
-MoveResultValue Table::isChessOrChessMat(Figure* currentFigure)
+MoveResultValue Table::isChessOrChessMat(Figure* currentFigurePtr)
 {
-    FigureColor currentFigureColor = currentFigure->getColor();
-    FigureColor otherFigureColor = currentFigure->getOtherColor();
+    FigureColor currentFigureColor = currentFigurePtr->getColor();
+    FigureColor otherFigureColor = currentFigurePtr->getOtherColor();
 
     auto moveResult = checkChess(otherFigureColor, currentFigureColor);
 
@@ -532,3 +473,41 @@ MoveResultValue Table::isChessOrChessMat(Figure* currentFigure)
     return MoveResultValue::notValidMove;
 }
 
+void Table::pawnOnEndTable(Move& move)
+{
+    auto currentFigurePtr = move.getCurrentFigure();
+    auto endPositionPtr = move.getEndPosition();
+    auto figureColor = currentFigurePtr->getColor();
+    FigureSet* figureSetInCurrentColor = getFigureSet(figureColor);
+
+    if (currentFigurePtr->getType() == FigureName::pawn &&
+            currentFigurePtr->isFigureOnEndTable(*endPositionPtr))
+    {
+        figureSetInCurrentColor->changePawnWithOtherFigure(move);
+    }
+}
+
+void Table::deleteAllFigures()
+{
+    for(auto &figureSet : _figuresOnTable)
+    {
+        figureSet.deleteFigures();
+    }
+}
+
+Table::~Table()
+{
+    deleteAllFigures();
+    deleteAllFields();
+}
+
+void Table::deleteAllFields()
+{
+    for(int i = 0 ; i < 8 ; i++)
+    {
+        delete [] _fields[i];
+        _fields[i] = nullptr;
+    }
+    delete [] _fields;
+
+}

@@ -12,6 +12,7 @@
 #include <vector>
 #include <memory>
 #include "textlogger.h"
+#include "move.h"
 
 class FigureSet
 {
@@ -22,14 +23,18 @@ public:
     FigureSet() = default;
     Figure* figureOnPosition(Field position);
     void setColor(FigureColor color);
+    FigureColor getColor();
+    void setFigures(std::vector<Figure*> allFigures);
     std::vector<Figure*> getFiguresWithoutKing();
     std::vector<Figure*> getAllFigures();
-    void addFigure(Figure* newFigure);
+    void addFigure(Figure* newFigurePtr);
     void initializeFiguresOnStart(std::vector<Figure*> allFigures);
     std::vector<std::pair<int,int>> allAllowedMovesForOneFigureSet(std::vector<Figure*> figuresOnTable);
-    void changePawnWithOtherFigure(Figure** pawnFigure);
-    void replaceFigure(Figure** pawnFigure, Figure* newFigure);
-    void deleteFigure(Figure* figureOnEndPosition);
+    void changePawnWithOtherFigure(Move& move);
+    void replaceFigure(Figure& pawnFigurePtr, Figure* newFigurePtr);
+    void deleteFigure(Figure* figureOnEndPositionPtr);
+    Figure* createFigure(std::string replaceFigureName, FigureColor color, Field* positionPtr);
+    void deleteFigures();
 };
 
 #endif // FIGURESET_H

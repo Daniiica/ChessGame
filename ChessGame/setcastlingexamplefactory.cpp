@@ -7,32 +7,35 @@ SetCastlingExampleFactory::SetCastlingExampleFactory()
 
 Table* SetCastlingExampleFactory::createTable()
 {
-    Table* table = new Table();
-    Field* field;
+    Table* tablePtr = new Table();
+    Field* fieldPtr;
     FigureSet blackFigureSet;
     blackFigureSet.setColor(FigureColor::Black);
     FigureSet whiteFigureSet;
     whiteFigureSet.setColor(FigureColor::White);
 
-    field = table->getField(7,4);
-    KingFigure* kingB = new KingFigure(FigureColor::Black, field);
-    blackFigureSet.addFigure(kingB);
+    fieldPtr = tablePtr->getField(7,4);
+    KingFigure* kingBPtr = new KingFigure(FigureColor::Black, fieldPtr);
+    blackFigureSet.addFigure(kingBPtr);
 
-    field = table->getField(0,4);
-    KingFigure* king = new KingFigure(FigureColor::White, field);
-    whiteFigureSet.addFigure(king);
+    fieldPtr = tablePtr->getField(7,2);
+    RookFigure* rookBPtr = new RookFigure(FigureColor::Black, fieldPtr);
+    blackFigureSet.addFigure(rookBPtr);
 
-    field = table->getField(0,0);
-    RookFigure* rook2 = new RookFigure(FigureColor::White, field);
-    whiteFigureSet.addFigure(rook2);
+    fieldPtr = tablePtr->getField(0,4);
+    KingFigure* kingPtr = new KingFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(kingPtr);
 
-    field = table->getField(0,7);
-    RookFigure* rook = new RookFigure(FigureColor::White, field);
-    whiteFigureSet.addFigure(rook);
+    fieldPtr = tablePtr->getField(0,0);
+    RookFigure* rook2Ptr = new RookFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(rook2Ptr);
 
-    table->setFigureSet(blackFigureSet,0);
-    table->setFigureSet(whiteFigureSet,1);
+    fieldPtr = tablePtr->getField(0,7);
+    RookFigure* rookPtr = new RookFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(rookPtr);
 
-    return table;
+    tablePtr->setFigureSet(blackFigureSet,0);
+    tablePtr->setFigureSet(whiteFigureSet,1);
 
+    return tablePtr;
 }

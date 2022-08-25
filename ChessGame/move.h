@@ -11,13 +11,11 @@ class Move
 private:
     Field _startPosition {};
     Field _endPosition {};
-    Figure* _figure {};
-    Figure* _eatenFigure {};
+    Figure* _figurePtr {};
+    Figure* _eatenFigurePtr {};
 public:
     Move() = default;
-    Move(Field startPosition, Field endPosition, Figure* figure, Figure* eatenFigure);
-    //MoveResultValue isValidMove(Table& table);
-    static void setFigure(Figure* figure);
+    Move(Field startPosition, Field endPosition, Figure* figurePtr, Figure* eatenFigurePtr);
     bool isCastling();
     Figure* getKingFigureInMove();
     Figure* getRookFigureInMove();
@@ -25,12 +23,6 @@ public:
     Figure* getCurrentFigure();
     Field* getStartPosition();
     Field* getEndPosition();
-    void undoMove(Field& startPosition,  Figure* currentFigure, Figure* eatenFigure);
-    bool checkIsPositionAttack(std::pair<int,int> position,
-                               std::vector<Figure*> allFigures,
-                               FigureColor color,
-                               int& howMuchFiguresAttackKing,
-                               Figure** figureWhoAttackKing);
     bool isCastlingAllowed();
     static MoveResultValue invalidMove();
     void setEndFigure(Figure* figurePtr);

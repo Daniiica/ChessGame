@@ -11,8 +11,8 @@ private:
 public:
     KingFigure();
     KingFigure(FigureColor color);
-    KingFigure(FigureColor color, Field* currentPosition) :
-        Figure(color, FigureName::king, currentPosition) {};
+    KingFigure(FigureColor color, Field* currentPositionPtr) :
+        Figure(color, FigureName::king, currentPositionPtr) {};
     bool isValidFigureMove(Field startPosition,Field nextPosition) override;
 
     std::vector<std::pair<int,int>> allAllowedMoves(std::vector<Figure*> figuresOnTable) override;

@@ -7,37 +7,51 @@ SetChessMatExampleFactory::SetChessMatExampleFactory()
 
 Table* SetChessMatExampleFactory::createTable()
 {
-    Table* table = new Table();
+    Table* tablePtr = new Table();
+    Field* fieldPtr{};
     FigureSet blackFigureSet;
     blackFigureSet.setColor(FigureColor::Black);
     FigureSet whiteFigureSet;
     whiteFigureSet.setColor(FigureColor::White);
 
-    KingFigure* king = new KingFigure(FigureColor::White,table->getField(0,3));
-    whiteFigureSet.addFigure(king);
-    PawnFigure* pawn2 = new PawnFigure(FigureColor::White,table->getField(1,0));
-    whiteFigureSet.addFigure(pawn2);
-    PawnFigure* pawn3 = new PawnFigure(FigureColor::White,table->getField(1,1));
-    whiteFigureSet.addFigure(pawn3);
-    PawnFigure* pawn5 = new PawnFigure(FigureColor::White,table->getField(1,2));
-    whiteFigureSet.addFigure(pawn5);
-    PawnFigure* pawn7 = new PawnFigure(FigureColor::White,table->getField(1,3));
-    whiteFigureSet.addFigure(pawn7);
-    PawnFigure* pawn8 = new PawnFigure(FigureColor::White,table->getField(1,4));
-    whiteFigureSet.addFigure(pawn8);
-    RookFigure* rook1 = new RookFigure(FigureColor::White,table->getField(0,0));
-    whiteFigureSet.addFigure(rook1);
-    RookFigure* rook2 = new RookFigure(FigureColor::Black,table->getField(1,6));
-    blackFigureSet.addFigure(rook2);
-    KingFigure* king2 = new KingFigure(FigureColor::Black,table->getField(7,3));
-    blackFigureSet.addFigure(king2);
-//    RookFigure* rook3 = new RookFigure(FigureColor::Black,table->getField(2,0));
-//    blackFigureSet.addFigure(rook3);
-//    KingFigure* kingW = new KingFigure(FigureColor::Black,table->getField(0,0));
-//    blackFigureSet.addFigure(kingW);
+    fieldPtr = tablePtr->getField(0,3);
+    KingFigure* kingPtr = new KingFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(kingPtr);
 
-    table->setFigureSet(blackFigureSet,0);
-    table->setFigureSet(whiteFigureSet,1);
+    fieldPtr = tablePtr->getField(1,0);
+    PawnFigure* pawn2Ptr = new PawnFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(pawn2Ptr);
 
-    return table;
+    fieldPtr = tablePtr->getField(1,1);
+    PawnFigure* pawn3Ptr = new PawnFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(pawn3Ptr);
+
+    fieldPtr = tablePtr->getField(1,2);
+    PawnFigure* pawn5Ptr = new PawnFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(pawn5Ptr);
+
+    fieldPtr = tablePtr->getField(1,3);
+    PawnFigure* pawn7Ptr = new PawnFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(pawn7Ptr);
+
+    fieldPtr = tablePtr->getField(1,4);
+    PawnFigure* pawn8Ptr = new PawnFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(pawn8Ptr);
+
+    fieldPtr = tablePtr->getField(0,0);
+    RookFigure* rook1Ptr = new RookFigure(FigureColor::White, fieldPtr);
+    whiteFigureSet.addFigure(rook1Ptr);
+
+    fieldPtr = tablePtr->getField(1,6);
+    RookFigure* rook2Ptr = new RookFigure(FigureColor::Black, fieldPtr);
+    blackFigureSet.addFigure(rook2Ptr);
+
+    fieldPtr = tablePtr->getField(7,3);
+    KingFigure* king2Ptr = new KingFigure(FigureColor::Black, fieldPtr);
+    blackFigureSet.addFigure(king2Ptr);
+
+    tablePtr->setFigureSet(blackFigureSet,0);
+    tablePtr->setFigureSet(whiteFigureSet,1);
+
+    return tablePtr;
 }

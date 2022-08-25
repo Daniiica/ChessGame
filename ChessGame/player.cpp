@@ -36,18 +36,18 @@ std::vector<Move> Player::getMovesFromPlayer()
     return _allMoves;
 }
 
-void Player::changeCastlingStatus(Figure* currentFigure, Field* firstPosition)
+void Player::changeCastlingStatus(Figure* currentFigurePtr, Field* firstPositionPtr)
 {
-    if(currentFigure->getType() == FigureName::king)
+    if(currentFigurePtr->getType() == FigureName::king)
     {
         _castlingLongStatus = false;
         _castlingShortStatus = false;
     }
-    if(currentFigure->getType() == FigureName::rook)
+    if(currentFigurePtr->getType() == FigureName::rook)
     {
-        if(firstPosition->getCol() == 0)
+        if(firstPositionPtr->getCol() == 0)
             _castlingLongStatus = false;
-        if(firstPosition->getCol() == 7)
+        if(firstPositionPtr->getCol() == 7)
             _castlingShortStatus = false;
     }
 }

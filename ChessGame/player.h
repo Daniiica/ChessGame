@@ -27,7 +27,7 @@ public:
    bool getCastlingLongStatus();
    bool getCastlingShortStatus();
    void disableCastlingStatus();
-   void changeCastlingStatus(Figure* currentFigure, Field* firstPosition);
+   void changeCastlingStatus(Figure* currentFigurePtr, Field* firstPositionPtr);
    bool isValidCastling(Move& move, Table& table);
    bool isCastling(Move& move, Table& table);
 };

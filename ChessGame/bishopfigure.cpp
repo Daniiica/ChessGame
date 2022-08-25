@@ -12,9 +12,9 @@ BishopFigure::BishopFigure(FigureColor color) : Figure(color)
     _state = true;
 }
 
-bool BishopFigure::isValidFigureMove(Field startPosition,Field nextPosition)
+bool BishopFigure::isValidFigureMove(Field startPosition, Field nextPosition)
 {
-    return isValidBishopMove(startPosition,nextPosition);
+    return isValidBishopMove(startPosition, nextPosition);
 }
 
 bool BishopFigure::isValidBishopMove(Field startPosition, Field nextPosition)
@@ -26,25 +26,25 @@ bool BishopFigure::isValidBishopMove(Field startPosition, Field nextPosition)
 std::vector<std::pair<int,int>> BishopFigure::allPositionsBetweenCurrentAndNextPosition(
         Field nextPosition)
 {
-    return allPositionsBetweenBishopAndNextPosition(_currentPosition,nextPosition);
+    return allPositionsBetweenBishopAndNextPosition(_currentPositionPtr, nextPosition);
 }
 
 std::vector<std::pair<int,int>> BishopFigure::allPositionsBetweenBishopAndNextPosition(
-        Field* currentPosition,Field nextPosition)
+        Field* currentPositionPtr, Field nextPosition)
 {
     std::vector<std::pair<int,int>> indexOfFields;
     Field downPosition = nextPosition;
-    Field topPosition = *currentPosition;
+    Field topPosition = *currentPositionPtr;
     Field leftPosition = nextPosition;
-    Field rightPosition = *currentPosition;
-    if(currentPosition->getRow() < nextPosition.getRow())
+    Field rightPosition = *currentPositionPtr;
+    if(currentPositionPtr->getRow() < nextPosition.getRow())
     {
-        downPosition = *currentPosition;
+        downPosition = *currentPositionPtr;
         topPosition = nextPosition;
     }
-    if(currentPosition->getCol() < nextPosition.getCol())
+    if(currentPositionPtr->getCol() < nextPosition.getCol())
     {
-        leftPosition = *currentPosition;
+        leftPosition = *currentPositionPtr;
         rightPosition = nextPosition;
     }
 
@@ -66,7 +66,7 @@ std::vector<std::pair<int,int>> BishopFigure::allPositionsBetweenBishopAndNextPo
 }
 void BishopFigure::fillAllowedMoves(std::vector<Figure*> figuresOnTable,
                                     FigureColor color,
-                                    std::vector<std::pair<int,int>>* allowedMoves,
+                                    std::vector<std::pair<int,int>>* allowedMovesPtr,
                                     int& initialPositionRow, int& initialPositionCol, // da ova 2 budu kao 1 pair
                                     int isUpOrDown, int isLeftOrRight) // i ova 2 kao jedan pair
 {
@@ -81,12 +81,12 @@ void BishopFigure::fillAllowedMoves(std::vector<Figure*> figuresOnTable,
             {
                 if(figure->getColor() != color)
                 {
-                    allowedMoves->emplace_back(pairRowCol);
+                    allowedMovesPtr->emplace_back(pairRowCol);
                 }
                 return;
             }
         }
-        allowedMoves->emplace_back(initialPositionRow + isUpOrDown,
+        allowedMovesPtr->emplace_back(initialPositionRow + isUpOrDown,
                                    initialPositionCol + isLeftOrRight);
         initialPositionRow += isUpOrDown;
         initialPositionCol += isLeftOrRight;
@@ -96,11 +96,11 @@ void BishopFigure::fillAllowedMoves(std::vector<Figure*> figuresOnTable,
 std::vector<std::pair<int,int>> BishopFigure::allAllowedMoves(std::vector<Figure*>
                                                               figuresOnTable)
 {
-    return allAllowedBishopMoves(_currentPosition,figuresOnTable, _color);
+    return allAllowedBishopMoves(_currentPositionPtr, figuresOnTable, _color);
 }
 
 std::vector<std::pair<int,int>> BishopFigure::allAllowedBishopMoves(
-        Field* currentPosition,std::vector<Figure*> figuresOnTable, FigureColor color)
+        Field* currentPositionPtr, std::vector<Figure*> figuresOnTable, FigureColor color)
 {
     std::vector<std::pair<int,int>> allowedMoves;
 
@@ -111,10 +111,10 @@ std::vector<std::pair<int,int>> BishopFigure::allAllowedBishopMoves(
     {
         for(int j = -1 ; j <= 1 ; j = j + 2)
         {
-            setInitialValues(currentPosition,initialPositionRow,initialPositionCol);
+            setInitialValues(currentPositionPtr, initialPositionRow, initialPositionCol);
 
             fillAllowedMoves(figuresOnTable, color, &allowedMoves,
-                             initialPositionRow,initialPositionCol,i,j);
+                             initialPositionRow, initialPositionCol,i,j);
         }
     }
     return allowedMoves;

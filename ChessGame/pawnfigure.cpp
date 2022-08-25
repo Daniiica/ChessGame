@@ -15,31 +15,31 @@ PawnFigure::PawnFigure(FigureColor color) : Figure(color)
 bool PawnFigure::eatOrNotEatFigure(Field nextPosition)
 {
     if(this->_color == FigureColor::White &&
-            nextPosition.getRow() == _currentPosition->getRow() + 1 &&
-            abs(nextPosition.getCol() - _currentPosition->getCol()) == 1)
+            nextPosition.getRow() == _currentPositionPtr->getRow() + 1 &&
+            abs(nextPosition.getCol() - _currentPositionPtr->getCol()) == 1)
     {
         return true;
     }
     if(this->_color == FigureColor::Black &&
-            _currentPosition->getRow() == nextPosition.getRow() + 1 &&
-            abs(nextPosition.getCol() - _currentPosition->getCol()) == 1)
+            _currentPositionPtr->getRow() == nextPosition.getRow() + 1 &&
+            abs(nextPosition.getCol() - _currentPositionPtr->getCol()) == 1)
     {
         return true;
     }
     return false;
 }
 
-bool PawnFigure::checkPawnMove(Field* startPosition, Field* endPosition, Figure* figureOnEndPosition, FigureColor color)
+bool PawnFigure::checkPawnMove(Field* startPositionPtr, Field* endPositionPtr, Figure* figureOnEndPositionPtr, FigureColor color)
 {
-    if (abs(startPosition->getCol() - endPosition->getCol()) == 1)
+    if (abs(startPositionPtr->getCol() - endPositionPtr->getCol()) == 1)
     {
-        if (figureOnEndPosition == nullptr ||
-                (figureOnEndPosition->getColor() == color))
+        if (figureOnEndPositionPtr == nullptr ||
+                (figureOnEndPositionPtr->getColor() == color))
             return false;
     }
     else
     {
-        if (figureOnEndPosition != nullptr)
+        if (figureOnEndPositionPtr != nullptr)
         {
             return false;
         }
@@ -76,14 +76,14 @@ std::vector<std::pair<int,int>> PawnFigure::allPositionsBetweenCurrentAndNextPos
         Field nextPosition)
 {
     std::vector<std::pair<int,int>> indexOfFields;
-    int minRow = _currentPosition->getRow();
-    int diff = abs(_currentPosition->getRow() - nextPosition.getRow());
+    int minRow = _currentPositionPtr->getRow();
+    int diff = abs(_currentPositionPtr->getRow() - nextPosition.getRow());
     for(int i = 1; i < diff ; i++)
     {
         if(this->getColor() == FigureColor::White)
-            indexOfFields.emplace_back(++minRow,_currentPosition->getCol());
+            indexOfFields.emplace_back(++minRow,_currentPositionPtr->getCol());
         else
-            indexOfFields.emplace_back(--minRow,_currentPosition->getCol());
+            indexOfFields.emplace_back(--minRow,_currentPositionPtr->getCol());
     }
     return indexOfFields;
 }
@@ -103,8 +103,8 @@ void PawnFigure::addAllowedPositionWhenNotEat(std::vector<Figure*> figuresOnTabl
                                               std::vector<std::pair<int,int>>& allowedMoves)
 {
     std::pair<int,int> nextMove;
-    nextMove.first = _currentPosition->getRow();
-    nextMove.second = _currentPosition->getCol();
+    nextMove.first = _currentPositionPtr->getRow();
+    nextMove.second = _currentPositionPtr->getCol();
     int index = _color == FigureColor::White ? 1 : -1;
     auto boundaryRow = _color == FigureColor::White ?
                 static_cast<int>(WhiteBlackZone::whiteZoneStartRow) :
@@ -113,7 +113,7 @@ void PawnFigure::addAllowedPositionWhenNotEat(std::vector<Figure*> figuresOnTabl
     for(int i = 1 ; i <= 2 ; i++)
     {
         nextMove.first += index;
-        if(i == 2 && _currentPosition->getRow() != boundaryRow + index)
+        if(i == 2 && _currentPositionPtr->getRow() != boundaryRow + index)
             return;
         for(auto figure : figuresOnTable)
         {
@@ -131,14 +131,14 @@ void PawnFigure::addAllowedPositionWhenEat(std::vector<Figure*> figuresOnTable,
 {
     std::pair<int,int> nextMove;
     int index = _color == FigureColor::White ? 1 : -1;
-    nextMove.first = _currentPosition->getRow() + index;
+    nextMove.first = _currentPositionPtr->getRow() + index;
 
     for(int i = -1 ; i <= 1 ; i = i + 2){
 
-        nextMove.second = _currentPosition->getCol() + i;
+        nextMove.second = _currentPositionPtr->getCol() + i;
         if(nextMove.second < 0 || nextMove.second > 7)
         {
-            nextMove.second = _currentPosition->getCol();
+            nextMove.second = _currentPositionPtr->getCol();
             continue;
         }
         for(auto figure : figuresOnTable)
